@@ -1,0 +1,145 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model AnalysisSession {
+  id          String   @id @default(cuid())
+  name        String
+  status      String   @default("pending") // pending, analyzing, completed, failed
+  fileCount   Int      @default(0)
+  totalIssues Int      @default(0)
+  
+  // Scores
+  documentHealthScore  Float   @default(0)
+  executionSafetyScore Float   @default(0)
+  governanceScore      Float   @default(0)
+  determinismScore     Float   @default(0)
+  overallConfidence    Float   @default(0)
+  
+  // Metadata
+  wordCount    Int      @default(0)
+  analysisTime Int      @default(0) // in milliseconds
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  files       AnalysisFile[]
+  issues      Issue[]
+  agentMetrics AgentMetric[]
+}
+
+model AnalysisFile {
+  id          String          @id @default(cuid())
+  sessionId   String
+  filename    String
+  content     String
+  wordCount   Int             @default(0)
+  createdAt   DateTime        @default(now())
+  session     AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  issues      Issue[]
+}
+
+model Issue {
+  id          String       @id @default(cuid())
+  sessionId   String
+  fileId      String?
+  type        String       // hallucination, contradiction, consistency, architectural, structural, logical, functional
+  severity    String       // critical, warning, info
+  title       String
+  description String
+  location    String?      // Line number or section reference
+  suggestion  String?      // Suggested fix
+  layer       String?      // Analysis layer
+  agentSource String?      // Agent that detected this
+  confidence  Float        @default(0)
+  createdAt   DateTime     @default(now())
+  session     AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  file        AnalysisFile?  @relation(fields: [fileId], references: [id], onDelete: SetNull)
+}
+
+// Memory System - Agent Performance Tracking
+model AgentMetric {
+  id              String   @id @default(cuid())
+  sessionId       String
+  agentName       String
+  agentTier       String   // core, advanced, meta
+  agentLayer      String   // primary layer
+  issueCount      Int      @default(0)
+  confidence      Float    @default(0)
+  processingTime  Int      @default(0) // in milliseconds
+  ruleBasedIssues Int      @default(0) // issues from rule-based detection
+  aiIssues        Int      @default(0) // issues from AI detection
+  accuracy        Float?   // calculated accuracy if validated
+  createdAt       DateTime @default(now())
+  session         AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([agentName])
+  @@index([sessionId])
+}
+
+// Memory System - Document Cache
+model DocumentCache {
+  id            String   @id @default(cuid())
+  contentHash   String   @unique // SHA256 hash of content
+  parsedData    String   // JSON stringified ParsedDocument
+  entityCount   Int      @default(0)
+  claimCount    Int      @default(0)
+  definitionCount Int    @default(0)
+  mutationCount Int      @default(0)
+  createdAt     DateTime @default(now())
+  lastAccessed  DateTime @default(now())
+  accessCount   Int      @default(0)
+  
+  @@index([contentHash])
+}
+
+// Memory System - Historical Statistics
+model AnalysisStatistics {
+  id                    String   @id @default(cuid())
+  date                  String   @unique // YYYY-MM-DD format
+  totalAnalyses         Int      @default(0)
+  totalIssues           Int      @default(0)
+  criticalIssues        Int      @default(0)
+  warningIssues         Int      @default(0)
+  infoIssues            Int      @default(0)
+  avgDocumentHealth     Float    @default(0)
+  avgExecutionSafety    Float    @default(0)
+  avgGovernance         Float    @default(0)
+  avgDeterminism        Float    @default(0)
+  avgConfidence         Float    @default(0)
+  avgAnalysisTime       Int      @default(0)
+  totalWordsProcessed   Int      @default(0)
+  createdAt             DateTime @default(now())
+  
+  @@index([date])
+}
+
+// AI Configuration - OpenAI-Compatible Settings
+model AISettings {
+  id                String   @id @default(cuid())
+  name              String   @default("default") // config name for multiple configs support
+  displayName       String?  // User-friendly name
+  baseUrl           String   // OpenAI-compatible base URL (e.g., https://api.openai.com/v1)
+  apiKey            String   // Encrypted API key
+  modelName         String   // Model to use (e.g., gpt-4, gpt-3.5-turbo, llama-2)
+  maxTokens         Int      @default(4096)
+  temperature       Float    @default(0.7)
+  isActive          Boolean  @default(true)
+  lastValidated     DateTime?
+  validationStatus  String   @default("pending") // pending, valid, invalid
+  validationError   String?  // Last validation error message
+  totalApiCalls     Int      @default(0)
+  totalTokensUsed   Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  
+  @@unique([name])
+  @@index([isActive])
+}
