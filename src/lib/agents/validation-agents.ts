@@ -845,3 +845,6 @@ export function getValidationAgents(): BaseValidationAgent[] {
     new PerformanceValidatorAgent(),
   ];
 }
+
+// Agent count export for meta-analyzer
+export const VALIDATION_AGENT_COUNT = 4;

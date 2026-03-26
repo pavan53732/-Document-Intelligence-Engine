@@ -2,9 +2,9 @@
 
 ## Overview
 
-The Document Intelligence Engine uses **55 specialized AI agents** organized into **6 tiers**:
+The Document Intelligence Engine uses **50 specialized AI agents** organized into **6 tiers**:
 - **Core Agents (10)** - Base document analysis
-- **Advanced Agents (20)** - System-specific validation
+- **Advanced Agents (21)** - System-specific validation
 - **Policy Engine Agents (4)** - Policy compliance and rule management 🆕 NEW
 - **Formal Verification Agents (7)** - Formal verification and proof systems 🆕 NEW
 - **Validation Agents (4)** - Context, memory, safety, and performance validation 🆕 NEW
@@ -67,7 +67,7 @@ Configure your AI provider via the **"AI Settings"** button in the header.
 └─────────────────────────────────────────────────────────────────┘
                                │
 ┌─────────────────────────────────────────────────────────────────┐
-│                  ADVANCED AGENTS (20) ✅ IMPLEMENTED            │
+│                  ADVANCED AGENTS (21) ✅ IMPLEMENTED            │
 │                                                                 │
 │  BASE (6):                                                      │
 │  ✅ Semantic Analyzer    ✅ Functional Validator                │
@@ -838,13 +838,14 @@ interface AgentResult {
 | Advanced - BASE | 6 | 6 | 0 | 0 |
 | Advanced - SYSTEM | 6 | 6 | 0 | 0 |
 | Advanced - FORMAL | 8 | 8 | 0 | 0 |
+| Advanced - BONUS | 1 | 1 | 0 | 0 |
 | Policy Engine Agents | 4 | 4 | 0 | 0 |
 | Formal Verification Agents | 7 | 7 | 0 | 0 |
 | Validation Agents | 4 | 4 | 0 | 0 |
 | Meta Agents | 4 | 4 | 0 | 0 |
-| **TOTAL** | **49** | **49** | **0** | **0** |
+| **TOTAL** | **50** | **50** | **0** | **0** |
 
-**Note**: We have 55 total agents (49 documented + 6 bonus agents including Authority Leak Detector and additional specialized agents).
+**Note**: We have 50 total agents (10 Core + 21 Advanced + 4 Policy + 7 Formal Verification + 4 Validation + 4 Meta).
 
 ---
 
@@ -971,4 +972,4 @@ interface ValidationStep {
 
 ---
 
-**All 55 agents are now fully implemented! See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for feature enhancement roadmap.**
+**All 50 agents are now fully implemented!**

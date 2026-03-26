@@ -917,3 +917,6 @@ export function getPolicyEngineAgents(): BasePolicyEngineAgent[] {
     new OverrideControllerAgent(),
   ];
 }
+
+// Agent count export for meta-analyzer
+export const POLICY_ENGINE_AGENT_COUNT = 4;

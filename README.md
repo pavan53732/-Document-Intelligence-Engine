@@ -1,17 +1,17 @@
 # 🧠 Document Intelligence Engine
 
-A **55-Agent, 42-Layer AI-Powered Document Analysis System** designed for **deterministic autonomous system specifications**. Features reasoning trace enforceability, evidence binding, uncertainty propagation, multi-step reasoning validation, global contradiction detection, and self-correction loop boundedness.
+A **50-Agent, 42-Layer AI-Powered Document Analysis System** designed for **deterministic autonomous system specifications**. Features reasoning trace enforceability, evidence binding, uncertainty propagation, multi-step reasoning validation, global contradiction detection, and self-correction loop boundedness.
 
 ## 🚀 What This Does
 
-This is a **Document Intelligence Validator Engine** that uses **55 specialized AI agents** organized into **6 tiers** to analyze documents with military-grade thoroughness across **42 analysis layers** with **5 cross-layer validation rules**.
+This is a **Document Intelligence Validator Engine** that uses **50 specialized AI agents** organized into **6 tiers** to analyze documents with military-grade thoroughness across **42 analysis layers** with **5 cross-layer validation rules**.
 
 ### Agent Architecture
 
 | Tier | Count | Purpose | Implementation Status |
 |------|-------|---------|----------------------|
 | **Core Agents** | 10 | Base document analysis (logic, consistency, structure, facts) | ✅ Implemented |
-| **Advanced Agents** | 20 | System-specific validation (execution, governance, determinism) | ✅ Implemented |
+| **Advanced Agents** | 21 | System-specific validation (execution, governance, determinism) | ✅ Implemented |
 | **Policy Engine Agents** | 4 | Policy enforcement, rule conflict resolution, audit trails, override control | ✅ Implemented |
 | **Formal Verification Agents** | 7 | Invariant enforcement, determinism audit, spec compliance, formal verification | ✅ Implemented |
 | **Validation Agents** | 4 | Context, memory integrity, safety, performance validation | ✅ Implemented |
@@ -33,7 +33,7 @@ This is a **Document Intelligence Validator Engine** that uses **55 specialized 
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                     DOCUMENT INTELLIGENCE ENGINE                         │
-│                         55 Agents • 42 Layers                            │
+│                         50 Agents • 42 Layers                            │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  ┌────────────────────────────────────────────────────────────────────┐ │
@@ -65,7 +65,7 @@ This is a **Document Intelligence Validator Engine** that uses **55 specialized 
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                     │
 │  ┌────────────────────────────────────────────────────────────────────┐ │
-│  │               ADVANCED AGENTS (20) - System Validation             │ │
+│  │               ADVANCED AGENTS (21) - System Validation             │ │
 │  │                                                                    │ │
 │  │  BASE (6): ✅ Semantic, ✅ Functional, ✅ Temporal,                │ │
 │  │            ✅ Completeness, ✅ Quantitative, ✅ Adversarial        │ │
@@ -173,15 +173,15 @@ This is a **Document Intelligence Validator Engine** that uses **55 specialized 
 ```
 src/
 ├── app/
-│   ├── page.tsx                 # Main frontend UI (55 agents, 42 layers)
+│   ├── page.tsx                 # Main frontend UI (50 agents, 42 layers)
 │   └── api/
 │       ├── analyze/route.ts     # Analysis API endpoint
 │       └── ai-settings/route.ts # AI configuration API
 ├── lib/
 │   ├── agents/
-│   │   ├── types.ts             # 42-layer, 55-agent type definitions
+│   │   ├── types.ts             # 42-layer, 50-agent type definitions
 │   │   ├── core-agents.ts       # 10 Core agents
-│   │   ├── advanced-agents.ts   # 20 Advanced agents
+│   │   ├── advanced-agents.ts   # 21 Advanced agents
 │   │   ├── policy-engine-agents.ts  # 4 Policy Engine agents
 │   │   ├── formal-verification-agents.ts  # 7 Formal Verification agents
 │   │   ├── validation-agents.ts # 4 Validation agents
@@ -341,7 +341,7 @@ bun run dev
 
 ## 🧬 Anti-Hallucination Design
 
-1. **Multi-Agent Cross-Validation** - 55 agents validate each other's findings
+1. **Multi-Agent Cross-Validation** - 50 agents validate each other's findings
 2. **Evidence Grounding** - Every finding cites exact document quotes
 3. **Knowledge Graph** - Documents converted to graph for context
 4. **Confidence Scoring** - Each issue has 0-100% confidence
@@ -364,17 +364,17 @@ bun run dev
 
 ## 📖 Documentation
 
-- [docs/AGENTS.md](./docs/AGENTS.md) - Agent documentation (55 agents)
+- [docs/AGENTS.md](./docs/AGENTS.md) - Agent documentation (50 agents)
 - [docs/API.md](./docs/API.md) - API reference with memory endpoints
 - [docs/ISSUE_TYPES.md](./docs/ISSUE_TYPES.md) - Issue types reference (50+ types)
 
 ## 🔧 System Status
 
-✅ **FULLY IMPLEMENTED** - All 55 agents operational across all 42 layers.
+✅ **FULLY IMPLEMENTED** - All 50 agents operational across all 42 layers.
 
 ### Complete Agent Coverage
 
-- **Total Agents**: 55 (10 Core + 20 Advanced + 4 Policy + 7 Formal + 4 Validation + 4 Meta)
+- **Total Agents**: 50 (10 Core + 21 Advanced + 4 Policy + 7 Formal + 4 Validation + 4 Meta)
 - **Total Layers**: 42 (10 BASE + 5 SYSTEM CORE + 13 FORMAL + 4 POLICY + 6 VERIFICATION + 4 VALIDATION)
 - **Cross-Layer Validations**: 5
 - **Reasoning Trace System**: ✅ Implemented
@@ -390,4 +390,4 @@ MIT License
 
 ---
 
-**Built with ❤️ using 55-Agent, 42-Layer Multi-Agent AI Architecture**
+**Built with ❤️ using 50-Agent, 42-Layer Multi-Agent AI Architecture**

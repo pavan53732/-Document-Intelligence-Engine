@@ -2,7 +2,7 @@
 
 ## System Overview
 
-The Document Intelligence Engine is a multi-layered AI-powered document analysis system designed to detect hallucinations, contradictions, and various quality issues across **42 analysis layers** using **55 specialized agents** with a **5-level severity system**.
+The Document Intelligence Engine is a multi-layered AI-powered document analysis system designed to detect hallucinations, contradictions, and various quality issues across **42 analysis layers** using **50 specialized agents** with a **5-level severity system**.
 
 > **📋 See [GAP_ANALYSIS.md](./docs/GAP_ANALYSIS.md) for implementation status and known issues.**
 
@@ -11,7 +11,7 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        DOCUMENT INTELLIGENCE ENGINE                      │
-│                           55 Agents • 42 Layers                          │
+│                           50 Agents • 42 Layers                          │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  ┌────────────────────────────────────────────────────────────────────┐ │
@@ -45,7 +45,7 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │                    MULTI-AGENT ANALYSIS LAYER                      │ │
 │  │  ┌───────────────────────────────────────────────────────────────┐ │ │
 │  │  │                    Meta Analyzer (Orchestrator)               │ │ │
-│  │  │  - Agent Initialization (55 agents)                          │ │ │
+│  │  │  - Agent Initialization (50 agents)                          │ │ │
 │  │  │  - Parallel Agent Execution                                  │ │ │
 │  │  │  - Cross-Layer Validation (5 rules)                          │ │ │
 │  │  │  - Reasoning Trace Generation                                │ │ │
@@ -392,7 +392,7 @@ interface ValidationStep {
 1. Create session in database
 2. Parse all documents
 3. Build cross-document knowledge graph
-4. Initialize all 55 agents
+4. Initialize all 50 agents
 5. Run agents in parallel (Core + Advanced + Policy + Formal Verification + Validation first, then Meta)
 6. Cross-validate results
 7. Calculate health/safety/governance scores

@@ -1,9 +1,9 @@
-// Complete Agent Types - 38+ Layers, 55+ Agent System
+// Complete Agent Types - 42 Layers, 50 Agent System
 // For Deterministic Autonomous System Specifications
 // Version 2.0 - Enhanced with Reasoning Traces, Policy Engine, Cross-Layer Validation
 
 // ========================================
-// 38+ ANALYSIS LAYERS
+// 42 ANALYSIS LAYERS
 // ========================================
 
 export type IssueLayer = 
