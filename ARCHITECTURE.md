@@ -122,10 +122,13 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  ┌────────────────────────────────────────────────────────────────────┐ │
 │  │                         AI/LLM LAYER                               │ │
 │  │  ┌─────────────────────────────────────────────────────────────┐   │ │
-│  │  │  z-ai-web-dev-sdk (LLM Integration)                         │   │ │
+│  │  │  OpenAI-Compatible API (User Configurable)                  │   │ │
+│  │  │  - Supports: OpenAI, Azure, Ollama, LM Studio, Groq, etc.  │   │ │
 │  │  │  - Chat Completions                                         │   │ │
 │  │  │  - Structured JSON Output                                   │   │ │
 │  │  │  - Multi-turn Context Management                            │   │ │
+│  │  │  - Token Usage Tracking                                     │   │ │
+│  │  │  - Encrypted API Key Storage                                │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                     │
@@ -429,6 +432,104 @@ interface GraphEdge {
 - **JSON Parsing Fallback**: Multiple attempts to parse AI response
 - **Timeout Protection**: API timeouts prevent hanging
 - **Error Storage**: Failed analyses stored with error status
+
+---
+
+## AI Configuration System
+
+The Document Intelligence Engine supports **any OpenAI-compatible API provider**, giving users complete flexibility in their AI backend choice.
+
+### Supported Providers
+
+| Provider | Base URL | Notes |
+|----------|----------|-------|
+| **OpenAI** | `https://api.openai.com/v1` | GPT-4o, GPT-4-turbo, GPT-3.5-turbo |
+| **Azure OpenAI** | `https://{resource}.openai.azure.com/...` | Your Azure deployments |
+| **Ollama (Local)** | `http://localhost:11434/v1` | Llama 3, Mistral, CodeLlama, Phi-3 |
+| **LM Studio (Local)** | `http://localhost:1234/v1` | Any local model |
+| **Groq** | `https://api.groq.com/openai/v1` | Fast inference (Llama 3.3 70B) |
+| **Together AI** | `https://api.together.xyz/v1` | Open-source models |
+| **Anthropic** | `https://api.anthropic.com/v1` | Claude 3.5 Sonnet (via proxy) |
+| **Custom** | Any URL | Any OpenAI-compatible endpoint |
+
+### Architecture Components
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        AI CONFIGURATION SYSTEM                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                          │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                    FRONTEND (AI Settings Modal)                    │ │
+│  │  - Provider preset selection (8 providers)                        │ │
+│  │  - Base URL configuration                                          │ │
+│  │  - API Key input (masked, encrypted)                              │ │
+│  │  - Model selection dropdown                                        │ │
+│  │  - Temperature & max tokens sliders                               │ │
+│  │  - Connection validation button                                    │ │
+│  │  - Usage statistics display                                        │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                     │
+│                                    ▼                                     │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                    API LAYER (/api/ai-settings)                    │ │
+│  │  - GET ?action=status - Get configuration status                  │ │
+│  │  - GET ?action=active - Get active configuration                  │ │
+│  │  - GET ?action=list - List all configurations                     │ │
+│  │  - POST action=save - Save configuration                           │ │
+│  │  - POST action=validate - Test connection                          │ │
+│  │  - POST action=activate - Switch active config                    │ │
+│  │  - POST action=delete - Remove configuration                       │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                     │
+│                                    ▼                                     │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                    OPENAI CLIENT (src/lib/ai/)                     │ │
+│  │  - OpenAI SDK initialization with user config                     │ │
+│  │  - XOR encryption for API keys (upgradeable)                       │ │
+│  │  - Connection validation via models.list()                         │ │
+│  │  - Token usage tracking                                            │ │
+│  │  - Error handling & fallback                                       │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                    │                                     │
+│                                    ▼                                     │
+│  ┌────────────────────────────────────────────────────────────────────┐ │
+│  │                    DATABASE (Prisma Schema)                        │ │
+│  │  model AISettings {                                                │ │
+│  │    name              String   @unique                              │ │
+│  │    displayName       String?                                       │ │
+│  │    baseUrl           String                                        │ │
+│  │    apiKey            String   // Encrypted                         │ │
+│  │    modelName         String                                        │ │
+│  │    maxTokens         Int     @default(4096)                        │ │
+│  │    temperature       Float   @default(0.7)                         │ │
+│  │    isActive          Boolean @default(true)                        │ │
+│  │    validationStatus  String  @default("pending")                   │ │
+│  │    totalApiCalls     Int     @default(0)                           │ │
+│  │    totalTokensUsed   Int     @default(0)                           │ │
+│  │  }                                                                 │ │
+│  └────────────────────────────────────────────────────────────────────┘ │
+│                                                                          │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Configuration Flow
+
+```
+1. User opens AI Settings Modal
+2. Selects provider preset (auto-fills URL & models)
+3. Enters API key
+4. Clicks "Validate" → API tests connection
+5. On success: saves encrypted config to database
+6. Agents automatically use active config
+```
+
+### Security Features
+
+- **Encrypted Storage**: API keys are XOR-encrypted before storage
+- **Masked Display**: Keys shown as `••••••••abcd` in UI
+- **Local Processing**: Keys never sent to third parties
+- **Validation**: Connection tested before saving
 
 ---
 

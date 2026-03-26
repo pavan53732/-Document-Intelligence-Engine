@@ -9,6 +9,20 @@ The Document Intelligence Engine uses **34 specialized AI agents** organized int
 
 > **📋 See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for implementation status and known issues.**
 
+## AI Backend
+
+All agents use a **user-configurable OpenAI-compatible API**. This means you can use:
+- **OpenAI** - GPT-4o, GPT-4-turbo, GPT-3.5-turbo
+- **Azure OpenAI** - Your Azure deployments
+- **Ollama (Local)** - Llama 3, Mistral, CodeLlama, Phi-3
+- **LM Studio (Local)** - Any local model
+- **Groq** - Fast inference (Llama 3.3 70B)
+- **Together AI** - Open-source models
+- **Anthropic** - Claude 3.5 Sonnet (via proxy)
+- **Custom** - Any OpenAI-compatible endpoint
+
+Configure your AI provider via the **"AI Settings"** button in the header.
+
 ## Implementation Status Legend
 
 | Symbol | Meaning |
@@ -29,23 +43,23 @@ The Document Intelligence Engine uses **34 specialized AI agents** organized int
 └─────────────────────────────────────────────────────────────────┘
                                │
 ┌─────────────────────────────────────────────────────────────────┐
-│                  ADVANCED AGENTS (20) ❌ NOT IMPLEMENTED        │
+│                  ADVANCED AGENTS (20) ✅ IMPLEMENTED            │
 │                                                                 │
 │  BASE (6):                                                      │
-│  ❌ Semantic Analyzer    ❌ Functional Validator                │
-│  ❌ Temporal Analyzer    ❌ Completeness Checker                │
-│  ❌ Quantitative Checker ❌ Adversarial Analyzer                │
+│  ✅ Semantic Analyzer    ✅ Functional Validator                │
+│  ✅ Temporal Analyzer    ✅ Completeness Checker                │
+│  ✅ Quantitative Checker ✅ Adversarial Analyzer                │
 │                                                                 │
 │  SYSTEM CORE (6):                                               │
-│  ❌ Authority Boundary     ❌ Execution Invariant               │
-│  ❌ Governance           ❌ State Mutation                     │
-│  ❌ Determinism          ❌ Multi-Agent Consistency             │
+│  ✅ Authority Boundary     ✅ Execution Invariant               │
+│  ✅ Governance           ✅ State Mutation                     │
+│  ✅ Determinism          ✅ Multi-Agent Consistency             │
 │                                                                 │
 │  FORMAL SYSTEM (8):                                             │
-│  ❌ Concurrency           ❌ Simulation                          │
-│  ❌ Recovery             ❌ World-Model                         │
-│  ❌ Boundary Enforcement ❌ Convergence                          │
-│  ❌ Semantic-Execution   ❌ Invariant Closure                    │
+│  ✅ Concurrency           ✅ Simulation                          │
+│  ✅ Recovery             ✅ World-Model                         │
+│  ✅ Boundary Enforcement ✅ Convergence                          │
+│  ✅ Semantic-Execution   ✅ Invariant Closure                    │
 └─────────────────────────────────────────────────────────────────┘
                                │
 ┌─────────────────────────────────────────────────────────────────┐
@@ -582,38 +596,4 @@ interface AgentPerformanceRecord {
 
 ---
 
-## 🚀 Implementation Priority
-
-### HIGH PRIORITY: Advanced Agents (20) - NOT IMPLEMENTED
-
-The following agents need to be created in `/src/lib/agents/advanced-agents.ts`:
-
-#### BASE Advanced (6)
-1. **Semantic Analyzer** - Ambiguity, vagueness detection
-2. **Functional Validator** - Workflow validation
-3. **Temporal Analyzer** - Timeline consistency
-4. **Completeness Checker** - Coverage gaps
-5. **Quantitative Checker** - Unit/calculation validation
-6. **Adversarial Analyzer** - Counter-argument generation
-
-#### SYSTEM CORE (6)
-7. **Authority Boundary Analyzer** - Permission/role validation
-8. **Execution Invariant Validator** - Invariant bypass detection
-9. **Governance Analyzer** - Policy enforcement
-10. **State Mutation Validator** - State machine validation
-11. **Determinism Analyzer** - Nondeterminism detection
-12. **Multi-Agent Consistency Analyzer** - Agent coordination
-
-#### FORMAL SYSTEM (8)
-13. **Concurrency Safety Analyzer** - Race condition detection
-14. **Simulation Soundness Analyzer** - Simulation accuracy
-15. **Recovery Semantics Analyzer** - Rollback correctness
-16. **World-Model Consistency Analyzer** - PSG integrity
-17. **Boundary Enforcement Checker** - Rule enforcement
-18. **Convergence Stability Analyzer** - Termination analysis
-19. **Semantic-Execution Checker** - Intent drift
-20. **Invariant Closure Checker** - Mutation path coverage
-
----
-
-**Currently 14 of 34 agents (41%) are implemented. See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for improvement roadmap.**
+**All 34 agents are now fully implemented! See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for feature enhancement roadmap.**
