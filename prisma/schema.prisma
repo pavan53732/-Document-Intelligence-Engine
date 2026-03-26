@@ -24,6 +24,14 @@ model AnalysisSession {
   determinismScore     Float   @default(0)
   overallConfidence    Float   @default(0)
   
+  // Enhanced Scores
+  reasoningTraceScore     Float   @default(0)
+  evidenceBindingScore    Float   @default(0)
+  policyComplianceScore   Float   @default(0)
+  crossLayerValidationScore Float @default(0)
+  closedWorldScore        Float   @default(0)
+  auditTrailScore         Float   @default(0)
+  
   // Metadata
   wordCount    Int      @default(0)
   analysisTime Int      @default(0) // in milliseconds
@@ -33,6 +41,9 @@ model AnalysisSession {
   files       AnalysisFile[]
   issues      Issue[]
   agentMetrics AgentMetric[]
+  reasoningTraces ReasoningTrace[]
+  auditEntries    AuditEntry[]
+  crossLayerValidations CrossLayerValidationRecord[]
 }
 
 model AnalysisFile {
@@ -51,7 +62,7 @@ model Issue {
   sessionId   String
   fileId      String?
   type        String       // hallucination, contradiction, consistency, architectural, structural, logical, functional
-  severity    String       // critical, warning, info
+  severity    String       // critical, high, medium, low, info (5-level system)
   title       String
   description String
   location    String?      // Line number or section reference
@@ -59,9 +70,29 @@ model Issue {
   layer       String?      // Analysis layer
   agentSource String?      // Agent that detected this
   confidence  Float        @default(0)
+  
+  // Enhanced fields
+  reasoningTraceId   String?
+  policyViolation    String?
+  auditEntryId       String?
+  isDeterministic    Boolean  @default(false)
+  closedWorldValidated Boolean @default(false)
+  crossLayerViolations String? // JSON array of violation IDs
+  
+  // Patch-ready correction
+  patchReady         Boolean  @default(false)
+  suggestedContent   String?
+  changeType         String?  // add, modify, delete, restructure
+  automatedSafe      Boolean  @default(false)
+  reviewRequired     Boolean  @default(true)
+  
   createdAt   DateTime     @default(now())
   session     AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   file        AnalysisFile?  @relation(fields: [fileId], references: [id], onDelete: SetNull)
+  
+  @@index([severity])
+  @@index([type])
+  @@index([layer])
 }
 
 // Memory System - Agent Performance Tracking
@@ -69,7 +100,7 @@ model AgentMetric {
   id              String   @id @default(cuid())
   sessionId       String
   agentName       String
-  agentTier       String   // core, advanced, meta
+  agentTier       String   // core, advanced, meta, policy, formal, validation
   agentLayer      String   // primary layer
   issueCount      Int      @default(0)
   confidence      Float    @default(0)
@@ -107,7 +138,9 @@ model AnalysisStatistics {
   totalAnalyses         Int      @default(0)
   totalIssues           Int      @default(0)
   criticalIssues        Int      @default(0)
-  warningIssues         Int      @default(0)
+  highIssues            Int      @default(0)
+  mediumIssues          Int      @default(0)
+  lowIssues             Int      @default(0)
   infoIssues            Int      @default(0)
   avgDocumentHealth     Float    @default(0)
   avgExecutionSafety    Float    @default(0)
@@ -116,6 +149,13 @@ model AnalysisStatistics {
   avgConfidence         Float    @default(0)
   avgAnalysisTime       Int      @default(0)
   totalWordsProcessed   Int      @default(0)
+  
+  // Enhanced statistics
+  avgReasoningTraceScore  Float   @default(0)
+  avgEvidenceBindingScore Float   @default(0)
+  avgPolicyComplianceScore Float  @default(0)
+  avgCrossLayerScore      Float   @default(0)
+  
   createdAt             DateTime @default(now())
   
   @@index([date])
@@ -142,4 +182,155 @@ model AISettings {
   
   @@unique([name])
   @@index([isActive])
+}
+
+// Reasoning Trace System
+model ReasoningTrace {
+  id              String   @id @default(cuid())
+  sessionId       String
+  agentSource     String
+  issueId         String?
+  totalSteps      Int      @default(0)
+  isValid         Boolean  @default(false)
+  confidenceScore Float    @default(0)
+  
+  // Uncertainty propagation
+  initialUncertainty Float   @default(0)
+  finalUncertainty   Float   @default(0)
+  uncertaintyBounded Boolean @default(false)
+  
+  // Self-correction
+  hasSelfCorrectionLoops Boolean @default(false)
+  loopStatus            String?  // converged, diverged, oscillating, bounded
+  maxIterations         Int      @default(0)
+  
+  // Evidence
+  evidenceCount     Int      @default(0)
+  avgRelevanceScore Float    @default(0)
+  avgReliabilityScore Float  @default(0)
+  
+  stepsJson        String   // JSON array of ReasoningStep
+  createdAt        DateTime @default(now())
+  session          AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([sessionId])
+  @@index([agentSource])
+}
+
+// Policy Engine System
+model Policy {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  layer       String
+  priority    Int      @default(0)
+  isActive    Boolean  @default(true)
+  rulesJson   String   // JSON array of PolicyRule
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@index([layer])
+  @@index([isActive])
+}
+
+model RuleConflict {
+  id              String   @id @default(cuid())
+  rule1Id         String
+  rule2Id         String
+  conflictType    String   // contradiction, overlap, exclusion, priority
+  description     String
+  resolution      String   // rule1_wins, rule2_wins, merge, escalate, unresolved
+  resolutionReason String?
+  resolvedAt      DateTime?
+  createdAt       DateTime @default(now())
+  
+  @@index([rule1Id])
+  @@index([rule2Id])
+}
+
+model AuditEntry {
+  id          String   @id @default(cuid())
+  sessionId   String
+  timestamp   DateTime @default(now())
+  agentSource String
+  action      String
+  target      String
+  result      String   // success, failure, warning, blocked
+  detailsJson String?  // JSON object with details
+  evidenceJson String? // JSON array of evidence strings
+  overrideId  String?
+  session     AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([sessionId])
+  @@index([agentSource])
+  @@index([result])
+}
+
+model OverrideRequest {
+  id              String   @id @default(cuid())
+  ruleId          String
+  requestedBy     String
+  reason          String
+  justification   String
+  riskAssessment  String?
+  approvedBy      String?
+  status          String   @default("pending") // pending, approved, rejected, expired
+  createdAt       DateTime @default(now())
+  expiresAt       DateTime?
+  resolvedAt      DateTime?
+  
+  @@index([status])
+  @@index([ruleId])
+}
+
+// Cross-Layer Validation Records
+model CrossLayerValidationRecord {
+  id              String   @id @default(cuid())
+  sessionId       String
+  validationId    String   // arch-exec-consistency, mem-ctx-consistency, etc.
+  name            String
+  status          String   // pass, fail, warning, not_applicable
+  sourceLayers    String   // JSON array of layer names
+  targetLayers    String   // JSON array of layer names
+  issueCount      Int      @default(0)
+  issuesJson      String?  // JSON array of issue IDs
+  validationJson  String?  // JSON object with full validation details
+  createdAt       DateTime @default(now())
+  session         AnalysisSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  @@index([sessionId])
+  @@index([validationId])
+  @@index([status])
+}
+
+// Closed World Validation
+model ClosedWorldValidationRecord {
+  id                String   @id @default(cuid())
+  sessionId         String
+  entitiesVerified  Int      @default(0)
+  entitiesUnknown   Int      @default(0)
+  assumptionsRejected Int    @default(0)
+  isValid           Boolean  @default(false)
+  violationsJson    String?  // JSON array of violation strings
+  createdAt         DateTime @default(now())
+  
+  @@index([sessionId])
+}
+
+// Evidence Bindings
+model EvidenceBinding {
+  id              String   @id @default(cuid())
+  traceId         String
+  stepId          String
+  evidenceType    String   // direct, indirect, circumstantial, expert, statistical
+  source          String
+  quote           String
+  location        String
+  relevanceScore  Float    @default(0)
+  reliabilityScore Float   @default(0)
+  chainOfCustodyJson String? // JSON array of custody strings
+  createdAt       DateTime @default(now())
+  
+  @@index([traceId])
+  @@index([evidenceType])
 }

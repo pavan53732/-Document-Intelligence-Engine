@@ -1,8 +1,9 @@
-// Complete Agent Types - 28-Layer, 29-Agent System
+// Complete Agent Types - 38+ Layers, 55+ Agent System
 // For Deterministic Autonomous System Specifications
+// Version 2.0 - Enhanced with Reasoning Traces, Policy Engine, Cross-Layer Validation
 
 // ========================================
-// 28 ANALYSIS LAYERS
+// 38+ ANALYSIS LAYERS
 // ========================================
 
 export type IssueLayer = 
@@ -36,10 +37,77 @@ export type IssueLayer =
   | 'boundary_enforcement' // Layer 25
   | 'simulation'           // Layer 26
   | 'convergence'          // Layer 27
-  | 'semantic_execution';  // Layer 28
+  | 'semantic_execution'   // Layer 28
+  // POLICY ENGINE LAYERS (29-32)
+  | 'policy_enforcement'   // Layer 29
+  | 'rule_conflict'        // Layer 30
+  | 'audit_trail'          // Layer 31
+  | 'override_control'     // Layer 32
+  // FORMAL VERIFICATION LAYERS (33-38)
+  | 'invariant_enforcement'// Layer 33
+  | 'determinism_audit'    // Layer 34
+  | 'spec_compliance'      // Layer 35
+  | 'ambiguity_resolution' // Layer 36
+  | 'state_explosion'      // Layer 37
+  | 'formal_verification'  // Layer 38
+  // VALIDATION LAYERS (39-42)
+  | 'context_validation'   // Layer 39
+  | 'memory_integrity'     // Layer 40
+  | 'safety_validation'    // Layer 41
+  | 'performance_validation';// Layer 42
 
 // ========================================
-// ISSUE TYPES (80+)
+// 5-LEVEL SEVERITY SYSTEM
+// ========================================
+
+export type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
+
+export const SEVERITY_CONFIG: Record<Severity, { 
+  label: string; 
+  color: string; 
+  bgColor: string;
+  borderColor: string;
+  priority: number;
+}> = {
+  critical: { 
+    label: 'CRITICAL', 
+    color: 'text-red-600', 
+    bgColor: 'bg-red-50', 
+    borderColor: 'border-red-500',
+    priority: 5 
+  },
+  high: { 
+    label: 'HIGH', 
+    color: 'text-orange-600', 
+    bgColor: 'bg-orange-50', 
+    borderColor: 'border-orange-500',
+    priority: 4 
+  },
+  medium: { 
+    label: 'MEDIUM', 
+    color: 'text-amber-600', 
+    bgColor: 'bg-amber-50', 
+    borderColor: 'border-amber-500',
+    priority: 3 
+  },
+  low: { 
+    label: 'LOW', 
+    color: 'text-blue-600', 
+    bgColor: 'bg-blue-50', 
+    borderColor: 'border-blue-500',
+    priority: 2 
+  },
+  info: { 
+    label: 'INFO', 
+    color: 'text-gray-600', 
+    bgColor: 'bg-gray-50', 
+    borderColor: 'border-gray-300',
+    priority: 1 
+  },
+};
+
+// ========================================
+// ISSUE TYPES (100+)
 // ========================================
 
 export type IssueType = 
@@ -56,13 +124,297 @@ export type IssueType =
   | 'sync_violation' | 'recovery_failure' | 'race_condition'
   | 'enforcement_gap' | 'simulation_drift' | 'convergence_failure'
   | 'semantic_drift'
+  // POLICY ENGINE ISSUES
+  | 'policy_violation' | 'rule_conflict' | 'missing_audit_trail'
+  | 'unauthorized_override' | 'policy_gap' | 'rule_ambiguity'
+  // FORMAL VERIFICATION ISSUES
+  | 'invariant_not_enforced' | 'determinism_break' | 'spec_violation'
+  | 'ambiguity_detected' | 'state_explosion_risk' | 'verification_failure'
+  // VALIDATION ISSUES
+  | 'context_mismatch' | 'memory_corruption' | 'safety_violation'
+  | 'performance_degradation' | 'resource_exhaustion'
+  // REASONING TRACE ISSUES
+  | 'reasoning_gap' | 'evidence_missing' | 'uncertainty_propagation'
+  | 'self_correction_loop' | 'multi_step_failure'
   // META ISSUES
-  | 'adversarial' | 'meta';
-
-export type Severity = 'critical' | 'warning' | 'info';
+  | 'adversarial' | 'meta' | 'cross_layer_violation';
 
 // ========================================
-// DETECTED ISSUE
+// REASONING TRACE SYSTEM
+// ========================================
+
+export interface ReasoningStep {
+  id: string;
+  stepNumber: number;
+  type: 'deduction' | 'induction' | 'abduction' | 'analogy' | 'causal';
+  premise: string;
+  conclusion: string;
+  confidence: number;
+  evidenceIds: string[];
+  assumptions: string[];
+  isEnforceable: boolean;
+  validationStatus: 'valid' | 'invalid' | 'unverified' | 'contradicted';
+}
+
+export interface ReasoningTrace {
+  id: string;
+  agentSource: string;
+  issueId: string;
+  steps: ReasoningStep[];
+  totalSteps: number;
+  isValid: boolean;
+  confidencePropagation: number[];
+  uncertaintyPropagation: UncertaintyPropagation[];
+  selfCorrectionLoops: SelfCorrectionLoop[];
+  evidenceBindings: EvidenceBinding[];
+  createdAt: Date;
+}
+
+export interface UncertaintyPropagation {
+  stepId: string;
+  inputUncertainty: number;
+  outputUncertainty: number;
+  propagationRule: 'additive' | 'multiplicative' | 'max' | 'bayesian';
+  bounded: boolean;
+}
+
+export interface SelfCorrectionLoop {
+  id: string;
+  traceId: string;
+  steps: string[];
+  maxIterations: number;
+  actualIterations: number;
+  convergenceStatus: 'converged' | 'diverged' | 'oscillating' | 'bounded';
+  terminationReason: string;
+}
+
+export interface EvidenceBinding {
+  id: string;
+  traceId: string;
+  stepId: string;
+  evidenceType: 'direct' | 'indirect' | 'circumstantial' | 'expert' | 'statistical';
+  source: string;
+  quote: string;
+  location: string;
+  relevanceScore: number;
+  reliabilityScore: number;
+  chainOfCustody: string[];
+}
+
+// ========================================
+// POLICY ENGINE TYPES
+// ========================================
+
+export interface Policy {
+  id: string;
+  name: string;
+  description: string;
+  layer: IssueLayer;
+  rules: PolicyRule[];
+  priority: number;
+  isActive: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface PolicyRule {
+  id: string;
+  policyId: string;
+  name: string;
+  condition: string;
+  action: string;
+  severity: Severity;
+  exceptions: string[];
+  dependencies: string[];
+  conflicts: string[];
+}
+
+export interface RuleConflict {
+  id: string;
+  rule1Id: string;
+  rule2Id: string;
+  conflictType: 'contradiction' | 'overlap' | 'exclusion' | 'priority';
+  description: string;
+  resolution: 'rule1_wins' | 'rule2_wins' | 'merge' | 'escalate' | 'unresolved';
+  resolutionReason?: string;
+}
+
+export interface AuditEntry {
+  id: string;
+  timestamp: Date;
+  agentSource: string;
+  action: string;
+  target: string;
+  result: 'success' | 'failure' | 'warning' | 'blocked';
+  details: Record<string, unknown>;
+  evidence: string[];
+  overrideId?: string;
+}
+
+export interface OverrideRequest {
+  id: string;
+  ruleId: string;
+  requestedBy: string;
+  reason: string;
+  justification: string;
+  riskAssessment: string;
+  approvedBy?: string;
+  status: 'pending' | 'approved' | 'rejected' | 'expired';
+  createdAt: Date;
+  expiresAt?: Date;
+}
+
+// ========================================
+// CROSS-LAYER VALIDATION
+// ========================================
+
+export interface CrossLayerValidation {
+  id: string;
+  name: string;
+  description: string;
+  sourceLayers: IssueLayer[];
+  targetLayers: IssueLayer[];
+  validationRules: CrossLayerRule[];
+  status: 'pass' | 'fail' | 'warning' | 'not_applicable';
+  issues: DetectedIssue[];
+}
+
+export interface CrossLayerRule {
+  id: string;
+  name: string;
+  sourceLayer: IssueLayer;
+  targetLayer: IssueLayer;
+  condition: string;
+  expectedResult: string;
+  actualResult?: string;
+  isValid: boolean;
+  violations: string[];
+}
+
+export const CROSS_LAYER_VALIDATIONS: CrossLayerValidation[] = [
+  {
+    id: 'arch-exec-consistency',
+    name: 'Architecture ↔ Execution Consistency',
+    description: 'Validates that execution paths match architectural definitions',
+    sourceLayers: ['architectural'],
+    targetLayers: ['execution_invariant', 'execution_psg_sync'],
+    validationRules: [],
+    status: 'not_applicable',
+    issues: [],
+  },
+  {
+    id: 'mem-ctx-consistency',
+    name: 'Memory ↔ Context Consistency',
+    description: 'Validates that memory state matches context state',
+    sourceLayers: ['psg_consistency'],
+    targetLayers: ['context_validation', 'memory_integrity'],
+    validationRules: [],
+    status: 'not_applicable',
+    issues: [],
+  },
+  {
+    id: 'agent-reasoning-trace',
+    name: 'Agent Outputs ↔ Reasoning Trace Mapping',
+    description: 'Validates that agent decisions are traceable to reasoning steps',
+    sourceLayers: ['multi_agent'],
+    targetLayers: ['logical', 'semantic'],
+    validationRules: [],
+    status: 'not_applicable',
+    issues: [],
+  },
+  {
+    id: 'tool-policy-constraint',
+    name: 'Tool Actions ↔ Policy Constraints',
+    description: 'Validates that tool actions comply with policy constraints',
+    sourceLayers: ['governance', 'policy_enforcement'],
+    targetLayers: ['authority_boundary', 'safety_validation'],
+    validationRules: [],
+    status: 'not_applicable',
+    issues: [],
+  },
+  {
+    id: 'control-runtime-enforcement',
+    name: 'Control Plane ↔ Runtime Enforcement',
+    description: 'Validates that control plane decisions are enforced at runtime',
+    sourceLayers: ['governance', 'override_control'],
+    targetLayers: ['boundary_enforcement', 'invariant_enforcement'],
+    validationRules: [],
+    status: 'not_applicable',
+    issues: [],
+  },
+];
+
+// ========================================
+// AUDIT OUTPUT REQUIREMENTS
+// ========================================
+
+export interface AuditOutput {
+  id: string;
+  sessionId: string;
+  timestamp: Date;
+  findings: AuditFinding[];
+  closedWorldValidation: ClosedWorldValidation;
+  severityClassification: SeverityClassification;
+  patchReadyCorrections: PatchReadyCorrection[];
+  deterministicProof: DeterministicProof;
+}
+
+export interface AuditFinding {
+  id: string;
+  issueId: string;
+  isDeterministic: boolean;
+  hasNoAssumptions: boolean;
+  closedWorldValidated: boolean;
+  severity: Severity;
+  patchReady: boolean;
+  evidenceChain: string[];
+  verificationMethod: string;
+}
+
+export interface ClosedWorldValidation {
+  id: string;
+  entitiesVerified: number;
+  entitiesUnknown: number;
+  assumptionsRejected: number;
+  isValid: boolean;
+  violations: string[];
+}
+
+export interface SeverityClassification {
+  id: string;
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+  info: number;
+  total: number;
+  classificationMethod: string;
+}
+
+export interface PatchReadyCorrection {
+  id: string;
+  issueId: string;
+  issueTitle: string;
+  currentContent: string;
+  suggestedContent: string;
+  changeType: 'add' | 'modify' | 'delete' | 'restructure';
+  confidence: number;
+  automatedSafe: boolean;
+  reviewRequired: boolean;
+  impact: string;
+}
+
+export interface DeterministicProof {
+  id: string;
+  proofType: 'exhaustive' | 'sampling' | 'formal' | 'statistical';
+  sampleSize: number;
+  passRate: number;
+  reproducibilityScore: number;
+  evidence: string[];
+}
+
+// ========================================
+// DETECTED ISSUE (Enhanced)
 // ========================================
 
 export interface DetectedIssue {
@@ -81,6 +433,15 @@ export interface DetectedIssue {
   subType?: string;
   impact?: string;
   crossReferences?: string[];
+  // New fields for enhanced system
+  reasoningTraceId?: string;
+  evidenceBindings?: EvidenceBinding[];
+  policyViolation?: string;
+  auditEntryId?: string;
+  patchReadyCorrection?: PatchReadyCorrection;
+  crossLayerViolations?: string[];
+  isDeterministic?: boolean;
+  closedWorldValidated?: boolean;
 }
 
 // ========================================
@@ -107,6 +468,10 @@ export interface DocumentGraph {
   stateMutations: StateMutation[];
   executionPaths: ExecutionPath[];
   governanceCheckpoints: GovernanceCheckpoint[];
+  // Enhanced fields
+  policies: Policy[];
+  reasoningTraces: ReasoningTrace[];
+  auditEntries: AuditEntry[];
 }
 
 export interface GraphNode {
@@ -133,6 +498,9 @@ export interface Claim {
   type: 'fact' | 'opinion' | 'inference' | 'definition' | 'prediction' | 'instruction';
   confidence: number;
   evidence?: string;
+  // Enhanced fields
+  evidenceBindings?: EvidenceBinding[];
+  verificationStatus?: 'verified' | 'unverified' | 'contradicted' | 'partial';
 }
 
 export interface Definition {
@@ -141,6 +509,9 @@ export interface Definition {
   definition: string;
   location: string;
   fileName: string;
+  // Enhanced fields
+  aliases?: string[];
+  scope?: 'global' | 'local' | 'contextual';
 }
 
 export interface Reference {
@@ -150,14 +521,20 @@ export interface Reference {
   location: string;
   fileName: string;
   type: 'internal' | 'external' | 'code' | 'resource';
+  // Enhanced fields
+  isValid?: boolean;
+  resolutionStatus?: 'resolved' | 'unresolved' | 'ambiguous';
 }
 
 export interface Entity {
   id: string;
   name: string;
-  type: 'agent' | 'component' | 'state' | 'resource' | 'authority' | 'boundary';
+  type: 'agent' | 'component' | 'state' | 'resource' | 'authority' | 'boundary' | 'policy' | 'rule';
   mentions: Array<{ text: string; location: string; fileName: string }>;
   attributes: Record<string, unknown>;
+  // Enhanced fields
+  closedWorldStatus?: 'known' | 'unknown' | 'partial';
+  verificationRequired?: boolean;
 }
 
 export interface StateMutation {
@@ -169,6 +546,10 @@ export interface StateMutation {
   authority: string;
   location: string;
   fileName: string;
+  // Enhanced fields
+  isLegal?: boolean;
+  invariantIds?: string[];
+  riskLevel?: 'low' | 'medium' | 'high' | 'critical';
 }
 
 export interface ExecutionPath {
@@ -178,6 +559,10 @@ export interface ExecutionPath {
   governancePoints: string[];
   location: string;
   fileName: string;
+  // Enhanced fields
+  isDeterministic?: boolean;
+  replayFidelity?: number;
+  stateExplosionRisk?: boolean;
 }
 
 export interface GovernanceCheckpoint {
@@ -186,25 +571,33 @@ export interface GovernanceCheckpoint {
   rule: string;
   location: string;
   fileName: string;
+  // Enhanced fields
+  policyId?: string;
+  enforcementStatus?: 'enforced' | 'bypassed' | 'partial';
 }
 
 // ========================================
-// AGENT RESULT
+// AGENT RESULT (Enhanced)
 // ========================================
 
 export interface AgentResult {
   agentName: string;
   agentLayer: IssueLayer;
-  agentTier: 'core' | 'advanced' | 'meta';
+  agentTier: 'core' | 'advanced' | 'meta' | 'policy' | 'formal' | 'validation';
   issues: DetectedIssue[];
   claims: Claim[];
   confidence: number;
   processingTime: number;
   metadata?: Record<string, unknown>;
+  // Enhanced fields
+  reasoningTraces?: ReasoningTrace[];
+  auditEntries?: AuditEntry[];
+  crossLayerValidations?: CrossLayerValidation[];
+  deterministicProof?: DeterministicProof;
 }
 
 // ========================================
-// META COGNITION REPORT
+// META COGNITION REPORT (Enhanced)
 // ========================================
 
 export interface MetaCognitionReport {
@@ -215,30 +608,49 @@ export interface MetaCognitionReport {
   disagreementPoints: string[];
   recommendedReview: string[];
   layerScores: Record<IssueLayer, number>;
+  // Enhanced fields
+  reasoningTraceCoverage: number;
+  evidenceBindingCoverage: number;
+  uncertaintyPropagationScore: number;
+  selfCorrectionLoopStatus: 'none' | 'converged' | 'diverged' | 'bounded';
+  policyComplianceScore: number;
+  auditTrailCompleteness: number;
+  crossLayerValidationResults: CrossLayerValidation[];
+  closedWorldValidationScore: number;
+  deterministicScore: number;
 }
 
 // ========================================
-// ANALYSIS SUMMARY
+// ANALYSIS SUMMARY (Enhanced)
 // ========================================
 
 export interface AnalysisSummary {
   totalIssues: number;
   critical: number;
-  warning: number;
+  high: number;
+  medium: number;
+  low: number;
   info: number;
   byType: Record<IssueType, number>;
   byLayer: Record<IssueLayer, number>;
   byAgent: Record<string, number>;
-  byTier: { core: number; advanced: number; meta: number };
+  byTier: { core: number; advanced: number; meta: number; policy: number; formal: number; validation: number };
   confidence: number;
   documentHealthScore: number;
   executionSafetyScore: number;
   governanceScore: number;
   determinismScore: number;
+  // Enhanced fields
+  reasoningTraceScore: number;
+  evidenceBindingScore: number;
+  policyComplianceScore: number;
+  crossLayerValidationScore: number;
+  closedWorldScore: number;
+  auditTrailScore: number;
 }
 
 // ========================================
-// 29 AGENT CONFIGURATION
+// AGENT CONFIGURATION (55+ Agents)
 // ========================================
 
 export const AGENT_CONFIG = {
@@ -290,7 +702,6 @@ export const AGENT_CONFIG = {
     color: 'emerald',
     layerGroup: 'base',
   },
-  // Additional Core Support Agents
   intentScopeChecker: {
     name: 'Intent-Scope Checker',
     tier: 'core' as const,
@@ -340,7 +751,6 @@ export const AGENT_CONFIG = {
   // ========================================
   // ADVANCED AGENTS (20)
   // ========================================
-  // Base Advanced
   semanticAnalyzer: {
     name: 'Semantic Analyzer',
     tier: 'advanced' as const,
@@ -395,7 +805,6 @@ export const AGENT_CONFIG = {
     color: 'slate',
     layerGroup: 'formal',
   },
-  // System Core Advanced Agents
   authorityBoundaryAnalyzer: {
     name: 'Authority Boundary Analyzer',
     tier: 'advanced' as const,
@@ -533,6 +942,153 @@ export const AGENT_CONFIG = {
   },
 
   // ========================================
+  // POLICY ENGINE AGENTS (4)
+  // ========================================
+  policyEngineAgent: {
+    name: 'Policy Engine Agent',
+    tier: 'policy' as const,
+    layer: 'policy_enforcement' as IssueLayer,
+    description: 'Enforces policy rules, validates compliance',
+    icon: '📜',
+    color: 'indigo',
+    layerGroup: 'policy',
+  },
+  ruleConflictResolver: {
+    name: 'Rule Conflict Resolver',
+    tier: 'policy' as const,
+    layer: 'rule_conflict' as IssueLayer,
+    description: 'Detects and resolves rule conflicts',
+    icon: '⚖️',
+    color: 'amber',
+    layerGroup: 'policy',
+  },
+  auditTrailGenerator: {
+    name: 'Audit Trail Generator',
+    tier: 'policy' as const,
+    layer: 'audit_trail' as IssueLayer,
+    description: 'Generates comprehensive audit trails',
+    icon: '📋',
+    color: 'teal',
+    layerGroup: 'policy',
+  },
+  overrideController: {
+    name: 'Override Controller',
+    tier: 'policy' as const,
+    layer: 'override_control' as IssueLayer,
+    description: 'Manages override requests and approvals',
+    icon: '🎛️',
+    color: 'red',
+    layerGroup: 'policy',
+  },
+
+  // ========================================
+  // FORMAL VERIFICATION AGENTS (7)
+  // ========================================
+  invariantEnforcerAgent: {
+    name: 'Invariant Enforcer Agent',
+    tier: 'formal' as const,
+    layer: 'invariant_enforcement' as IssueLayer,
+    description: 'Enforces invariants at runtime, prevents violations',
+    icon: '🛡️',
+    color: 'red',
+    layerGroup: 'formal_verification',
+  },
+  determinismAuditor: {
+    name: 'Determinism Auditor',
+    tier: 'formal' as const,
+    layer: 'determinism_audit' as IssueLayer,
+    description: 'Audits execution for determinism compliance',
+    icon: '🔍',
+    color: 'blue',
+    layerGroup: 'formal_verification',
+  },
+  specComplianceAgent: {
+    name: 'Spec Compliance Agent',
+    tier: 'formal' as const,
+    layer: 'spec_compliance' as IssueLayer,
+    description: 'Validates specification compliance',
+    icon: '✅',
+    color: 'green',
+    layerGroup: 'formal_verification',
+  },
+  ambiguityEliminator: {
+    name: 'Ambiguity Eliminator',
+    tier: 'formal' as const,
+    layer: 'ambiguity_resolution' as IssueLayer,
+    description: 'Eliminates ambiguities, enforces clarity',
+    icon: '🎯',
+    color: 'amber',
+    layerGroup: 'formal_verification',
+  },
+  stateExplosionController: {
+    name: 'State Explosion Controller',
+    tier: 'formal' as const,
+    layer: 'state_explosion' as IssueLayer,
+    description: 'Controls state space explosion, ensures tractability',
+    icon: '💥',
+    color: 'orange',
+    layerGroup: 'formal_verification',
+  },
+  adversarialTesterAgent: {
+    name: 'Adversarial Tester Agent',
+    tier: 'formal' as const,
+    layer: 'formal_verification' as IssueLayer,
+    description: 'Adversarial testing, stress testing, vulnerability detection',
+    icon: '⚔️',
+    color: 'slate',
+    layerGroup: 'formal_verification',
+  },
+  formalVerifierAgent: {
+    name: 'Formal Verifier Agent',
+    tier: 'formal' as const,
+    layer: 'formal_verification' as IssueLayer,
+    description: 'Mathematical verification of properties',
+    icon: '🔬',
+    color: 'purple',
+    layerGroup: 'formal_verification',
+  },
+
+  // ========================================
+  // VALIDATION AGENTS (4)
+  // ========================================
+  contextValidator: {
+    name: 'Context Validator',
+    tier: 'validation' as const,
+    layer: 'context_validation' as IssueLayer,
+    description: 'Validates context consistency and completeness',
+    icon: '🎯',
+    color: 'cyan',
+    layerGroup: 'validation',
+  },
+  memoryIntegrityAgent: {
+    name: 'Memory Integrity Agent',
+    tier: 'validation' as const,
+    layer: 'memory_integrity' as IssueLayer,
+    description: 'Validates memory state integrity',
+    icon: '💾',
+    color: 'blue',
+    layerGroup: 'validation',
+  },
+  safetyValidator: {
+    name: 'Safety Validator',
+    tier: 'validation' as const,
+    layer: 'safety_validation' as IssueLayer,
+    description: 'Validates safety properties and constraints',
+    icon: '🛡️',
+    color: 'green',
+    layerGroup: 'validation',
+  },
+  performanceValidator: {
+    name: 'Performance Validator',
+    tier: 'validation' as const,
+    layer: 'performance_validation' as IssueLayer,
+    description: 'Validates performance requirements',
+    icon: '📊',
+    color: 'teal',
+    layerGroup: 'validation',
+  },
+
+  // ========================================
   // META AGENTS (4)
   // ========================================
   crossAgentConflictResolver: {
@@ -548,7 +1104,7 @@ export const AGENT_CONFIG = {
     name: 'Severity Scoring Engine',
     tier: 'meta' as const,
     layer: 'governance' as IssueLayer,
-    description: 'Assigns CRITICAL/HIGH/MEDIUM/LOW severity',
+    description: 'Assigns CRITICAL/HIGH/MEDIUM/LOW/INFO severity',
     icon: '📊',
     color: 'red',
     layerGroup: 'meta',
@@ -574,7 +1130,7 @@ export const AGENT_CONFIG = {
 };
 
 // ========================================
-// LAYER CONFIGURATION
+// LAYER CONFIGURATION (Enhanced)
 // ========================================
 
 export const LAYER_CONFIG: Record<IssueLayer, { 
@@ -617,10 +1173,30 @@ export const LAYER_CONFIG: Record<IssueLayer, {
   simulation: { label: 'Simulation Soundness', icon: '🧪', color: 'green', group: 'formal', order: 26 },
   convergence: { label: 'Goal Convergence', icon: '🎯', color: 'orange', group: 'formal', order: 27 },
   semantic_execution: { label: 'Semantic-Execution Alignment', icon: '🔄', color: 'violet', group: 'formal', order: 28 },
+
+  // POLICY ENGINE LAYERS (29-32)
+  policy_enforcement: { label: 'Policy Enforcement', icon: '📜', color: 'indigo', group: 'policy', order: 29 },
+  rule_conflict: { label: 'Rule Conflict Resolution', icon: '⚖️', color: 'amber', group: 'policy', order: 30 },
+  audit_trail: { label: 'Audit Trail Generation', icon: '📋', color: 'teal', group: 'policy', order: 31 },
+  override_control: { label: 'Override Control', icon: '🎛️', color: 'red', group: 'policy', order: 32 },
+
+  // FORMAL VERIFICATION LAYERS (33-38)
+  invariant_enforcement: { label: 'Invariant Enforcement', icon: '🛡️', color: 'red', group: 'formal_verification', order: 33 },
+  determinism_audit: { label: 'Determinism Audit', icon: '🔍', color: 'blue', group: 'formal_verification', order: 34 },
+  spec_compliance: { label: 'Spec Compliance', icon: '✅', color: 'green', group: 'formal_verification', order: 35 },
+  ambiguity_resolution: { label: 'Ambiguity Resolution', icon: '🎯', color: 'amber', group: 'formal_verification', order: 36 },
+  state_explosion: { label: 'State Explosion Control', icon: '💥', color: 'orange', group: 'formal_verification', order: 37 },
+  formal_verification: { label: 'Formal Verification', icon: '🔬', color: 'purple', group: 'formal_verification', order: 38 },
+
+  // VALIDATION LAYERS (39-42)
+  context_validation: { label: 'Context Validation', icon: '🎯', color: 'cyan', group: 'validation', order: 39 },
+  memory_integrity: { label: 'Memory Integrity', icon: '💾', color: 'blue', group: 'validation', order: 40 },
+  safety_validation: { label: 'Safety Validation', icon: '🛡️', color: 'green', group: 'validation', order: 41 },
+  performance_validation: { label: 'Performance Validation', icon: '📊', color: 'teal', group: 'validation', order: 42 },
 };
 
 // ========================================
-// ISSUE TYPE CONFIGURATION
+// ISSUE TYPE CONFIGURATION (Enhanced)
 // ========================================
 
 export const ISSUE_TYPE_CONFIG: Record<string, {
@@ -665,9 +1241,40 @@ export const ISSUE_TYPE_CONFIG: Record<string, {
   convergence_failure: { label: 'Convergence Failure', icon: '🔄', color: 'red', layer: 'convergence', description: 'Non-terminating process' },
   semantic_drift: { label: 'Semantic Drift', icon: '🔀', color: 'violet', layer: 'semantic_execution', description: 'Intent-execution mismatch' },
   
+  // POLICY ENGINE ISSUE TYPES
+  policy_violation: { label: 'Policy Violation', icon: '📜', color: 'red', layer: 'policy_enforcement', description: 'Policy rule violated' },
+  rule_conflict: { label: 'Rule Conflict', icon: '⚖️', color: 'amber', layer: 'rule_conflict', description: 'Conflicting rules' },
+  missing_audit_trail: { label: 'Missing Audit Trail', icon: '📋', color: 'teal', layer: 'audit_trail', description: 'No audit trail for action' },
+  unauthorized_override: { label: 'Unauthorized Override', icon: '🎛️', color: 'red', layer: 'override_control', description: 'Override without authorization' },
+  policy_gap: { label: 'Policy Gap', icon: '📝', color: 'indigo', layer: 'policy_enforcement', description: 'Missing policy coverage' },
+  rule_ambiguity: { label: 'Rule Ambiguity', icon: '❓', color: 'amber', layer: 'rule_conflict', description: 'Ambiguous rule interpretation' },
+  
+  // FORMAL VERIFICATION ISSUE TYPES
+  invariant_not_enforced: { label: 'Invariant Not Enforced', icon: '🛡️', color: 'red', layer: 'invariant_enforcement', description: 'Invariant not enforced at runtime' },
+  determinism_break: { label: 'Determinism Break', icon: '🎲', color: 'orange', layer: 'determinism_audit', description: 'Determinism violated' },
+  spec_violation: { label: 'Spec Violation', icon: '✅', color: 'red', layer: 'spec_compliance', description: 'Specification not met' },
+  ambiguity_detected: { label: 'Ambiguity Detected', icon: '🎯', color: 'amber', layer: 'ambiguity_resolution', description: 'Ambiguous definition found' },
+  state_explosion_risk: { label: 'State Explosion Risk', icon: '💥', color: 'orange', layer: 'state_explosion', description: 'State space too large' },
+  verification_failure: { label: 'Verification Failure', icon: '🔬', color: 'red', layer: 'formal_verification', description: 'Property verification failed' },
+  
+  // VALIDATION ISSUE TYPES
+  context_mismatch: { label: 'Context Mismatch', icon: '🎯', color: 'cyan', layer: 'context_validation', description: 'Context inconsistency' },
+  memory_corruption: { label: 'Memory Corruption', icon: '💾', color: 'red', layer: 'memory_integrity', description: 'Memory state corrupted' },
+  safety_violation: { label: 'Safety Violation', icon: '🛡️', color: 'red', layer: 'safety_validation', description: 'Safety constraint violated' },
+  performance_degradation: { label: 'Performance Degradation', icon: '📊', color: 'teal', layer: 'performance_validation', description: 'Performance requirement not met' },
+  resource_exhaustion: { label: 'Resource Exhaustion', icon: '⚠️', color: 'orange', layer: 'performance_validation', description: 'Resource limit exceeded' },
+  
+  // REASONING TRACE ISSUE TYPES
+  reasoning_gap: { label: 'Reasoning Gap', icon: '🔗', color: 'orange', layer: 'logical', description: 'Missing reasoning step' },
+  evidence_missing: { label: 'Evidence Missing', icon: '❓', color: 'amber', layer: 'factual', description: 'No evidence for claim' },
+  uncertainty_propagation: { label: 'Uncertainty Propagation', icon: '📊', color: 'violet', layer: 'logical', description: 'Uncertainty not propagated' },
+  self_correction_loop: { label: 'Self Correction Loop', icon: '🔄', color: 'red', layer: 'logical', description: 'Unbounded self-correction' },
+  multi_step_failure: { label: 'Multi Step Failure', icon: '⛓️', color: 'red', layer: 'logical', description: 'Multi-step reasoning failed' },
+  
   // META ISSUE TYPES
   adversarial: { label: 'Adversarial', icon: '⚔️', color: 'slate', layer: 'semantic_execution', description: 'Counter-argument found' },
   meta: { label: 'Meta', icon: '🔮', color: 'indigo', layer: 'semantic_execution', description: 'Self-validation issue' },
+  cross_layer_violation: { label: 'Cross Layer Violation', icon: '🔀', color: 'red', layer: 'multi_agent', description: 'Cross-layer consistency violation' },
 };
 
 // ========================================

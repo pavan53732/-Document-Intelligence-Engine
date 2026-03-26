@@ -5,6 +5,9 @@ import {
   CORE_AGENT_COUNT,
   ADVANCED_AGENT_COUNT,
   META_AGENT_COUNT,
+  POLICY_ENGINE_AGENT_COUNT,
+  FORMAL_VERIFICATION_AGENT_COUNT,
+  VALIDATION_AGENT_COUNT,
   TOTAL_AGENT_COUNT_EXPORT,
   AGENT_NAMES,
 } from '@/lib/agents/meta-analyzer';
@@ -106,8 +109,8 @@ export async function POST(request: NextRequest) {
       // Step 3: Initialize all agents
       await metaAnalyzer.initializeAll();
 
-      // Step 4: Run all agents in optimized parallel execution
-      const agentResults = await metaAnalyzer.runAllAgentsOptimized(files, parsedDocs, graph);
+      // Step 4: Run all agents in optimized parallel execution (with reasoning traces and cross-layer validation)
+      const { results: agentResults, reasoningTraces, crossLayerValidations } = await metaAnalyzer.runAllAgentsOptimized(files, parsedDocs, graph);
 
       // Step 5: Cross-validate issues
       const { validated, uncertain, metaReport } = metaAnalyzer.crossValidateIssues(agentResults);
@@ -117,7 +120,7 @@ export async function POST(request: NextRequest) {
       const totalWords = files.reduce((sum, f) => 
         sum + f.content.split(/\s+/).filter(Boolean).length, 0
       );
-      const summary = metaAnalyzer.buildSummary(allIssues, agentResults, totalWords);
+      const summary = metaAnalyzer.buildSummary(allIssues, agentResults, totalWords, reasoningTraces, crossLayerValidations);
       
       // Calculate layer scores
       const layerScores = metaAnalyzer.calculateLayerScores(allIssues);
@@ -139,6 +142,51 @@ export async function POST(request: NextRequest) {
               layer: issue.layer,
               agentSource: issue.agentSource,
               confidence: issue.confidence,
+              reasoningTraceId: issue.reasoningTraceId,
+              policyViolation: issue.policyViolation,
+              isDeterministic: issue.isDeterministic,
+              closedWorldValidated: issue.closedWorldValidated,
+              patchReady: !!issue.patchReadyCorrection,
+            },
+          });
+        }
+
+        // Save reasoning traces
+        for (const trace of reasoningTraces) {
+          await db.reasoningTrace.create({
+            data: {
+              sessionId,
+              agentSource: trace.agentSource,
+              issueId: trace.issueId,
+              totalSteps: trace.totalSteps,
+              isValid: trace.isValid,
+              confidenceScore: trace.confidenceScore,
+              initialUncertainty: trace.uncertaintyPropagation[0]?.inputUncertainty || 0,
+              finalUncertainty: trace.uncertaintyPropagation[trace.uncertaintyPropagation.length - 1]?.outputUncertainty || 0,
+              uncertaintyBounded: trace.uncertaintyPropagation.every(u => u.bounded),
+              hasSelfCorrectionLoops: trace.selfCorrectionLoops.length > 0,
+              loopStatus: trace.selfCorrectionLoops[0]?.convergenceStatus || null,
+              evidenceCount: trace.evidenceBindings.length,
+              avgRelevanceScore: trace.evidenceBindings.reduce((s, e) => s + e.relevanceScore, 0) / Math.max(trace.evidenceBindings.length, 1),
+              avgReliabilityScore: trace.evidenceBindings.reduce((s, e) => s + e.reliabilityScore, 0) / Math.max(trace.evidenceBindings.length, 1),
+              stepsJson: JSON.stringify(trace.steps),
+            },
+          });
+        }
+
+        // Save cross-layer validation records
+        for (const validation of crossLayerValidations) {
+          await db.crossLayerValidationRecord.create({
+            data: {
+              sessionId,
+              validationId: validation.id,
+              name: validation.name,
+              status: validation.status,
+              sourceLayers: JSON.stringify(validation.sourceLayers),
+              targetLayers: JSON.stringify(validation.targetLayers),
+              issueCount: validation.issues.length,
+              issuesJson: JSON.stringify(validation.issues.map(i => i.id)),
+              validationJson: JSON.stringify(validation),
             },
           });
         }
@@ -148,6 +196,10 @@ export async function POST(request: NextRequest) {
           data: {
             status: 'completed',
             totalIssues: allIssues.length,
+            reasoningTraceScore: summary.reasoningTraceScore,
+            evidenceBindingScore: summary.evidenceBindingScore,
+            policyComplianceScore: summary.policyComplianceScore,
+            crossLayerValidationScore: summary.crossLayerValidationScore,
           },
         });
 
@@ -166,7 +218,9 @@ export async function POST(request: NextRequest) {
           summary: {
             totalIssues: summary.totalIssues,
             critical: summary.critical,
-            warning: summary.warning,
+            high: summary.high,
+            medium: summary.medium,
+            low: summary.low,
             info: summary.info,
             documentHealthScore: summary.documentHealthScore,
             executionSafetyScore: summary.executionSafetyScore,
@@ -210,9 +264,28 @@ export async function POST(request: NextRequest) {
           totalAgents: TOTAL_AGENT_COUNT_EXPORT,
           coreAgents: CORE_AGENT_COUNT,
           advancedAgents: ADVANCED_AGENT_COUNT,
+          policyAgents: POLICY_ENGINE_AGENT_COUNT,
+          formalAgents: FORMAL_VERIFICATION_AGENT_COUNT,
+          validationAgents: VALIDATION_AGENT_COUNT,
           metaAgents: META_AGENT_COUNT,
           agentNames: AGENT_NAMES,
         },
+        // New: Reasoning traces
+        reasoningTraces: reasoningTraces.map(t => ({
+          id: t.id,
+          agentSource: t.agentSource,
+          totalSteps: t.totalSteps,
+          isValid: t.isValid,
+          confidenceScore: t.confidenceScore,
+          evidenceCount: t.evidenceBindings.length,
+        })),
+        // New: Cross-layer validations
+        crossLayerValidations: crossLayerValidations.map(v => ({
+          id: v.id,
+          name: v.name,
+          status: v.status,
+          issueCount: v.issues.length,
+        })),
         // Additional extracted data for frontend
         extractedData: {
           entities: graph.entities.slice(0, 50).map(e => ({
@@ -306,6 +379,9 @@ export async function GET(request: NextRequest) {
         files: true,
         issues: true,
         agentMetrics: true,
+        reasoningTraces: true,
+        auditEntries: true,
+        crossLayerValidations: true,
       },
     });
 
@@ -329,6 +405,9 @@ export async function GET(request: NextRequest) {
       executionSafetyScore: true,
       governanceScore: true,
       determinismScore: true,
+      reasoningTraceScore: true,
+      policyComplianceScore: true,
+      crossLayerValidationScore: true,
       createdAt: true,
     },
   });

@@ -21,7 +21,8 @@ import {
   FileCode, Zap, CheckCircle2, XCircle, Loader2, Download, Trash2, ChevronRight,
   Sparkles, Shield, Activity, Search, Heart, Quote, MessageSquare, Settings,
   TimerIcon, Puzzle, Crosshair, BarChart3, Swords, Lock, RefreshCw, Target, Clock,
-  Database, TrendingUp, Users, Box, ArrowRightLeft, Gauge, History, Cpu
+  Database, TrendingUp, Users, Box, ArrowRightLeft, Gauge, History, Cpu, Scale,
+  FileCheck, AlertOctagon, ShieldCheck, CheckSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AISettingsModal, AIStatusIndicator } from '@/components/ai-settings-modal';
@@ -31,23 +32,44 @@ import { AISettingsModal, AIStatusIndicator } from '@/components/ai-settings-mod
 // ========================================
 
 type IssueLayer = 
+  // BASE (1-10)
   | 'contradiction' | 'logical' | 'structural' | 'semantic' | 'factual'
   | 'functional' | 'temporal' | 'architectural' | 'completeness' | 'intent'
+  // SYSTEM CORE (11-15)
   | 'execution_invariant' | 'authority_boundary' | 'deterministic' | 'governance' | 'psg_consistency'
+  // FORMAL SYSTEM (16-28)
   | 'invariant_closure' | 'state_mutation' | 'authority_leak' | 'closed_world' | 'replay_fidelity'
   | 'multi_agent' | 'execution_psg_sync' | 'recovery' | 'concurrency' | 'boundary_enforcement'
-  | 'simulation' | 'convergence' | 'semantic_execution';
+  | 'simulation' | 'convergence' | 'semantic_execution'
+  // POLICY ENGINE (29-32)
+  | 'policy_enforcement' | 'rule_conflict' | 'audit_trail' | 'override_control'
+  // FORMAL VERIFICATION (33-38)
+  | 'invariant_enforcement' | 'determinism_audit' | 'spec_compliance' | 'ambiguity_resolution'
+  | 'state_explosion' | 'formal_verification'
+  // VALIDATION (39-42)
+  | 'context_validation' | 'memory_integrity' | 'safety_validation' | 'performance_validation';
 
 type IssueType = 
+  // Base types
   | 'hallucination' | 'contradiction' | 'consistency' | 'structural' | 'logical' 
   | 'functional' | 'semantic' | 'temporal' | 'completeness' | 'intent' | 'quantitative'
+  // System types
   | 'invariant_violation' | 'authority_breach' | 'nondeterminism' | 'governance_gap' | 'psg_integrity'
+  // Formal types
   | 'invariant_bypass' | 'mutation_illegality' | 'privilege_escalation' | 'unknown_entity'
   | 'replay_divergence' | 'agent_conflict' | 'sync_violation' | 'recovery_failure' | 'race_condition'
   | 'enforcement_gap' | 'simulation_drift' | 'convergence_failure' | 'semantic_drift'
+  // Policy Engine types
+  | 'policy_violation' | 'rule_conflict' | 'audit_failure' | 'unauthorized_override'
+  // Formal Verification types
+  | 'invariant_failure' | 'determinism_failure' | 'spec_violation' | 'ambiguity_detected'
+  | 'state_explosion_risk' | 'verification_failure'
+  // Validation types
+  | 'context_error' | 'memory_corruption' | 'safety_violation' | 'performance_degradation'
+  // Other
   | 'adversarial' | 'meta';
 
-type Severity = 'critical' | 'warning' | 'info';
+type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 
 interface MarkdownFile {
   id: string;
@@ -75,7 +97,7 @@ interface Issue {
 interface AgentResult {
   agentName: string;
   agentLayer: IssueLayer;
-  agentTier: 'core' | 'advanced' | 'meta';
+  agentTier: 'core' | 'advanced' | 'meta' | 'policy' | 'formal' | 'validation';
   issueCount: number;
   confidence: number;
   processingTime: number;
@@ -101,17 +123,23 @@ interface GovernanceCheckpoint {
 interface AnalysisSummary {
   totalIssues: number;
   critical: number;
-  warning: number;
+  high: number;
+  medium: number;
+  low: number;
   info: number;
   byType: Record<IssueType, number>;
   byLayer: Record<IssueLayer, number>;
   byAgent: Record<string, number>;
-  byTier: { core: number; advanced: number; meta: number };
+  byTier: { core: number; advanced: number; meta: number; policy: number; formal: number; validation: number };
   confidence: number;
   documentHealthScore: number;
   executionSafetyScore: number;
   governanceScore: number;
   determinismScore: number;
+  reasoningTraceScore: number;
+  evidenceBindingScore: number;
+  policyComplianceScore: number;
+  crossLayerValidationScore: number;
   layerScores?: Record<IssueLayer, number>;
   analysisTime?: number;
 }
@@ -139,6 +167,9 @@ interface AnalysisResult {
     coreAgents: number;
     advancedAgents: number;
     metaAgents: number;
+    policyAgents: number;
+    formalAgents: number;
+    validationAgents: number;
     agentNames: string[];
   };
   extractedData?: {
@@ -153,10 +184,10 @@ interface AnalysisResult {
 }
 
 // ========================================
-// 28 LAYER CONFIGURATION
+// 42 LAYER CONFIGURATION
 // ========================================
 
-const ALL_28_LAYERS = [
+const ALL_42_LAYERS = [
   // BASE (1-10)
   { id: 'contradiction', name: 'Contradiction & Consistency', group: 'base', num: 1 },
   { id: 'logical', name: 'Logical Integrity', group: 'base', num: 2 },
@@ -188,9 +219,27 @@ const ALL_28_LAYERS = [
   { id: 'simulation', name: 'Simulation Soundness', group: 'formal', num: 26 },
   { id: 'convergence', name: 'Goal Convergence', group: 'formal', num: 27 },
   { id: 'semantic_execution', name: 'Semantic-Execution Alignment', group: 'formal', num: 28 },
+  // POLICY ENGINE (29-32)
+  { id: 'policy_enforcement', name: 'Policy Enforcement', group: 'policy', num: 29 },
+  { id: 'rule_conflict', name: 'Rule Conflict Detection', group: 'policy', num: 30 },
+  { id: 'audit_trail', name: 'Audit Trail Validation', group: 'policy', num: 31 },
+  { id: 'override_control', name: 'Override Control', group: 'policy', num: 32 },
+  // FORMAL VERIFICATION (33-38)
+  { id: 'invariant_enforcement', name: 'Invariant Enforcement', group: 'verification', num: 33 },
+  { id: 'determinism_audit', name: 'Determinism Audit', group: 'verification', num: 34 },
+  { id: 'spec_compliance', name: 'Specification Compliance', group: 'verification', num: 35 },
+  { id: 'ambiguity_resolution', name: 'Ambiguity Resolution', group: 'verification', num: 36 },
+  { id: 'state_explosion', name: 'State Explosion Prevention', group: 'verification', num: 37 },
+  { id: 'formal_verification', name: 'Formal Verification', group: 'verification', num: 38 },
+  // VALIDATION (39-42)
+  { id: 'context_validation', name: 'Context Validation', group: 'validation', num: 39 },
+  { id: 'memory_integrity', name: 'Memory Integrity', group: 'validation', num: 40 },
+  { id: 'safety_validation', name: 'Safety Validation', group: 'validation', num: 41 },
+  { id: 'performance_validation', name: 'Performance Validation', group: 'validation', num: 42 },
 ];
 
 const ISSUE_TYPE_CONFIG: Record<string, { label: string; icon: string; color: string; bgColor: string }> = {
+  // Base types
   hallucination: { label: 'Hallucination', icon: '🎭', color: 'text-purple-500', bgColor: 'bg-purple-500/10' },
   contradiction: { label: 'Contradiction', icon: '⚡', color: 'text-red-500', bgColor: 'bg-red-500/10' },
   consistency: { label: 'Consistency', icon: '🔄', color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
@@ -202,19 +251,40 @@ const ISSUE_TYPE_CONFIG: Record<string, { label: string; icon: string; color: st
   completeness: { label: 'Completeness', icon: '🧩', color: 'text-violet-500', bgColor: 'bg-violet-500/10' },
   intent: { label: 'Intent', icon: '🎯', color: 'text-rose-500', bgColor: 'bg-rose-500/10' },
   quantitative: { label: 'Quantitative', icon: '📊', color: 'text-teal-500', bgColor: 'bg-teal-500/10' },
+  // System types
   invariant_violation: { label: 'Invariant Violation', icon: '🛡️', color: 'text-red-500', bgColor: 'bg-red-500/10' },
   authority_breach: { label: 'Authority Breach', icon: '🔒', color: 'text-red-500', bgColor: 'bg-red-500/10' },
   nondeterminism: { label: 'Nondeterminism', icon: '🎲', color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
   governance_gap: { label: 'Governance Gap', icon: '⚖️', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10' },
   race_condition: { label: 'Race Condition', icon: '⚡', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  // Policy Engine types
+  policy_violation: { label: 'Policy Violation', icon: '📋', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  rule_conflict: { label: 'Rule Conflict', icon: '⚔️', color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
+  audit_failure: { label: 'Audit Failure', icon: '📝', color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
+  unauthorized_override: { label: 'Unauthorized Override', icon: '🚫', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  // Formal Verification types
+  invariant_failure: { label: 'Invariant Failure', icon: '🔴', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  determinism_failure: { label: 'Determinism Failure', icon: '🌀', color: 'text-orange-500', bgColor: 'bg-orange-500/10' },
+  spec_violation: { label: 'Spec Violation', icon: '📄', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  ambiguity_detected: { label: 'Ambiguity Detected', icon: '❓', color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
+  state_explosion_risk: { label: 'State Explosion Risk', icon: '💥', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  verification_failure: { label: 'Verification Failure', icon: '❌', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  // Validation types
+  context_error: { label: 'Context Error', icon: '🔍', color: 'text-amber-500', bgColor: 'bg-amber-500/10' },
+  memory_corruption: { label: 'Memory Corruption', icon: '🧠', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  safety_violation: { label: 'Safety Violation', icon: '⚠️', color: 'text-red-500', bgColor: 'bg-red-500/10' },
+  performance_degradation: { label: 'Performance Degradation', icon: '📉', color: 'text-blue-500', bgColor: 'bg-blue-500/10' },
+  // Other
   adversarial: { label: 'Adversarial', icon: '⚔️', color: 'text-slate-500', bgColor: 'bg-slate-500/10' },
   meta: { label: 'Meta', icon: '🔮', color: 'text-indigo-500', bgColor: 'bg-indigo-500/10' },
 };
 
 const severityConfig = {
   critical: { label: 'Critical', icon: XCircle, color: 'text-red-500', bgColor: 'bg-red-500' },
-  warning: { label: 'Warning', icon: AlertTriangle, color: 'text-amber-500', bgColor: 'bg-amber-500' },
-  info: { label: 'Info', icon: Info, color: 'text-blue-500', bgColor: 'bg-blue-500' },
+  high: { label: 'High', icon: AlertOctagon, color: 'text-orange-500', bgColor: 'bg-orange-500' },
+  medium: { label: 'Medium', icon: AlertTriangle, color: 'text-amber-500', bgColor: 'bg-amber-500' },
+  low: { label: 'Low', icon: AlertCircle, color: 'text-blue-500', bgColor: 'bg-blue-500' },
+  info: { label: 'Info', icon: Info, color: 'text-gray-500', bgColor: 'bg-gray-500' },
 };
 
 const AGENT_ICONS: Record<string, typeof Brain> = {
@@ -234,6 +304,20 @@ const AGENT_ICONS: Record<string, typeof Brain> = {
   'Execution Invariant Validator': RefreshCw,
   'Governance Analyzer': Target,
   'Determinism Analyzer': RefreshCw,
+  'Policy Enforcement Agent': Scale,
+  'Rule Conflict Analyzer': FileCheck,
+  'Audit Trail Validator': FileCheck,
+  'Override Control Agent': ShieldCheck,
+  'Invariant Enforcement Agent': ShieldCheck,
+  'Determinism Auditor': RefreshCw,
+  'Spec Compliance Checker': FileCheck,
+  'Ambiguity Resolver': Crosshair,
+  'State Explosion Analyzer': AlertTriangle,
+  'Formal Verification Agent': CheckSquare,
+  'Context Validator': Search,
+  'Memory Integrity Agent': Database,
+  'Safety Validator': Shield,
+  'Performance Validator': Gauge,
   'default': Activity,
 };
 
@@ -327,8 +411,8 @@ export default function MarkdownAnalyzerApp() {
       setProgressMessage('📚 Parsing documents & building knowledge graph...');
       setProgress(15);
 
-      // Show progress for all agents (will be updated from API response)
-      const progressAgentCount = 35; // 10 Core + 21 Advanced + 4 Meta
+      // Show progress for all 55 agents (10 Core + 20 Advanced + 4 Policy + 7 Formal + 4 Validation + 4 Meta)
+      const progressAgentCount = 55;
       for (let i = 0; i < progressAgentCount; i++) {
         setProgressMessage(`🤖 Running analysis agent ${i + 1}/${progressAgentCount}...`);
         setProgress(20 + (i / progressAgentCount) * 60);
@@ -407,6 +491,9 @@ export default function MarkdownAnalyzerApp() {
       case 'base': return 'from-blue-500/10 to-green-500/10';
       case 'system': return 'from-red-500/10 to-orange-500/10';
       case 'formal': return 'from-purple-500/10 to-indigo-500/10';
+      case 'policy': return 'from-teal-500/10 to-cyan-500/10';
+      case 'verification': return 'from-rose-500/10 to-pink-500/10';
+      case 'validation': return 'from-emerald-500/10 to-lime-500/10';
       default: return 'from-gray-500/10 to-gray-500/10';
     }
   };
@@ -426,7 +513,7 @@ export default function MarkdownAnalyzerApp() {
                   Document Intelligence Engine
                 </h1>
                 <p className="text-xs text-muted-foreground">
-                  {result?.agentInfo.totalAgents || 35} Agents • 28 Layers • Memory System Enabled
+                  {result?.agentInfo.totalAgents || 55} Agents • 42 Layers • Memory System Enabled
                 </p>
               </div>
             </div>
@@ -459,7 +546,7 @@ export default function MarkdownAnalyzerApp() {
                     </Badge>
                   )}
                   <Badge variant="outline" className="text-xs">
-                    {result.agentInfo.coreAgents} Core • {result.agentInfo.advancedAgents} Advanced • {result.agentInfo.metaAgents} Meta
+                    {result.agentInfo.coreAgents} Core • {result.agentInfo.advancedAgents} Advanced • {result.agentInfo.policyAgents || 0} Policy • {result.agentInfo.formalAgents || 0} Formal • {result.agentInfo.validationAgents || 0} Validation • {result.agentInfo.metaAgents} Meta
                   </Badge>
                   <Button variant="outline" size="sm" onClick={exportResults}>
                     <Download className="w-4 h-4 mr-2" />Export
@@ -544,7 +631,7 @@ export default function MarkdownAnalyzerApp() {
               <div className="flex justify-center">
                 <Button size="lg" className="px-8 bg-gradient-to-r from-purple-500 via-blue-500 to-emerald-500" onClick={analyzeFiles}>
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Run {result?.agentInfo.totalAgents || 35}-Agent Analysis
+                  Run {result?.agentInfo.totalAgents || 55}-Agent Analysis
                 </Button>
               </div>
             )}
@@ -558,9 +645,12 @@ export default function MarkdownAnalyzerApp() {
                       <span className="text-sm text-muted-foreground">{progress}%</span>
                     </div>
                     <Progress value={progress} className="h-2" />
-                    <div className="flex justify-center gap-1 text-xs">
+                    <div className="flex flex-wrap justify-center gap-1 text-xs">
                       <Badge variant="outline" className="bg-blue-500/10">Core: 10</Badge>
                       <Badge variant="outline" className="bg-purple-500/10">Advanced: 20</Badge>
+                      <Badge variant="outline" className="bg-teal-500/10">Policy: 4</Badge>
+                      <Badge variant="outline" className="bg-rose-500/10">Formal: 7</Badge>
+                      <Badge variant="outline" className="bg-emerald-500/10">Validation: 4</Badge>
                       <Badge variant="outline" className="bg-amber-500/10">Meta: 4</Badge>
                     </div>
                   </div>
@@ -570,34 +660,64 @@ export default function MarkdownAnalyzerApp() {
 
             {/* Info when no files */}
             {files.length === 0 && !isAnalyzing && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <Card className="bg-gradient-to-br from-blue-500/5 to-green-500/5">
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <Activity className="w-5 h-5" /> BASE Layers (1-10)
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Activity className="w-4 h-4" /> BASE (1-10)
                     </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Document correctness: contradiction, logical, structural, semantic, factual, functional, temporal, architectural, completeness, intent
+                    <p className="text-[10px] text-muted-foreground">
+                      contradiction, logical, structural, semantic, factual, functional, temporal, architectural, completeness, intent
                     </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-red-500/5 to-orange-500/5">
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <Lock className="w-5 h-5" /> SYSTEM CORE (11-15)
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Lock className="w-4 h-4" /> SYSTEM (11-15)
                     </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Execution safety: execution invariant, authority boundary, deterministic, governance, PSG consistency
+                    <p className="text-[10px] text-muted-foreground">
+                      execution invariant, authority boundary, deterministic, governance, PSG consistency
                     </p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-purple-500/5 to-indigo-500/5">
-                  <CardContent className="p-4">
-                    <h3 className="font-semibold mb-2 flex items-center gap-2">
-                      <Target className="w-5 h-5" /> FORMAL SYSTEM (16-28)
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Target className="w-4 h-4" /> FORMAL (16-28)
                     </h3>
-                    <p className="text-xs text-muted-foreground">
-                      Formal verification: invariant closure, state mutation, authority leak, concurrency, simulation, convergence
+                    <p className="text-[10px] text-muted-foreground">
+                      invariant closure, state mutation, authority leak, concurrency, simulation, convergence
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-teal-500/5 to-cyan-500/5">
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <Scale className="w-4 h-4" /> POLICY (29-32)
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground">
+                      policy enforcement, rule conflict, audit trail, override control
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-rose-500/5 to-pink-500/5">
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <ShieldCheck className="w-4 h-4" /> VERIFICATION (33-38)
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground">
+                      invariant enforcement, determinism audit, spec compliance, ambiguity, state explosion, formal verification
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-emerald-500/5 to-lime-500/5">
+                  <CardContent className="p-3">
+                    <h3 className="text-xs font-semibold mb-1 flex items-center gap-1">
+                      <CheckSquare className="w-4 h-4" /> VALIDATION (39-42)
+                    </h3>
+                    <p className="text-[10px] text-muted-foreground">
+                      context validation, memory integrity, safety validation, performance validation
                     </p>
                   </CardContent>
                 </Card>
@@ -607,8 +727,8 @@ export default function MarkdownAnalyzerApp() {
         ) : (
           /* Results */
           <div className="space-y-4">
-            {/* Score Cards */}
-            <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+            {/* Score Cards - 5 Severity Levels */}
+            <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
               <Card className="bg-gradient-to-br from-background to-muted/30">
                 <CardContent className="p-3 text-center">
                   <p className="text-xs text-muted-foreground">Document Health</p>
@@ -623,16 +743,28 @@ export default function MarkdownAnalyzerApp() {
                   <p className="text-2xl font-bold text-red-500">{result.summary.critical}</p>
                 </CardContent>
               </Card>
+              <Card className="bg-gradient-to-br from-orange-500/10 to-transparent">
+                <CardContent className="p-3 text-center">
+                  <p className="text-xs text-muted-foreground">High</p>
+                  <p className="text-2xl font-bold text-orange-500">{result.summary.high}</p>
+                </CardContent>
+              </Card>
               <Card className="bg-gradient-to-br from-amber-500/10 to-transparent">
                 <CardContent className="p-3 text-center">
-                  <p className="text-xs text-muted-foreground">Warnings</p>
-                  <p className="text-2xl font-bold text-amber-500">{result.summary.warning}</p>
+                  <p className="text-xs text-muted-foreground">Medium</p>
+                  <p className="text-2xl font-bold text-amber-500">{result.summary.medium}</p>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-blue-500/10 to-transparent">
                 <CardContent className="p-3 text-center">
+                  <p className="text-xs text-muted-foreground">Low</p>
+                  <p className="text-2xl font-bold text-blue-500">{result.summary.low}</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-gray-500/10 to-transparent">
+                <CardContent className="p-3 text-center">
                   <p className="text-xs text-muted-foreground">Info</p>
-                  <p className="text-2xl font-bold text-blue-500">{result.summary.info}</p>
+                  <p className="text-2xl font-bold text-gray-500">{result.summary.info}</p>
                 </CardContent>
               </Card>
               <Card className="bg-gradient-to-br from-emerald-500/10 to-transparent">
@@ -644,7 +776,7 @@ export default function MarkdownAnalyzerApp() {
             </div>
 
             {/* Special Scores with Gauges */}
-            <div className="grid grid-cols-3 gap-2">
+            <div className="grid grid-cols-3 md:grid-cols-7 gap-2">
               <Card className="bg-gradient-to-br from-red-500/5 to-orange-500/5">
                 <CardContent className="p-3">
                   <div className="flex items-center justify-between mb-2">
@@ -654,17 +786,17 @@ export default function MarkdownAnalyzerApp() {
                         {result.summary.executionSafetyScore.toFixed(0)}%
                       </p>
                     </div>
-                    <div className="relative w-12 h-12">
-                      <svg className="w-12 h-12 -rotate-90">
-                        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-muted" />
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
                         <circle 
-                          cx="24" cy="24" r="20" fill="none" 
-                          stroke="currentColor" strokeWidth="4" 
-                          strokeDasharray={`${result.summary.executionSafetyScore * 1.256} 125.6`}
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${result.summary.executionSafetyScore * 1.005} 100.5`}
                           className={result.summary.executionSafetyScore >= 80 ? 'text-green-500' : result.summary.executionSafetyScore >= 60 ? 'text-amber-500' : 'text-red-500'}
                         />
                       </svg>
-                      <Lock className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500" />
+                      <Lock className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-red-500" />
                     </div>
                   </div>
                   <Progress value={result.summary.executionSafetyScore} className="h-1" />
@@ -679,17 +811,17 @@ export default function MarkdownAnalyzerApp() {
                         {result.summary.governanceScore.toFixed(0)}%
                       </p>
                     </div>
-                    <div className="relative w-12 h-12">
-                      <svg className="w-12 h-12 -rotate-90">
-                        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-muted" />
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
                         <circle 
-                          cx="24" cy="24" r="20" fill="none" 
-                          stroke="currentColor" strokeWidth="4" 
-                          strokeDasharray={`${result.summary.governanceScore * 1.256} 125.6`}
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${result.summary.governanceScore * 1.005} 100.5`}
                           className={result.summary.governanceScore >= 80 ? 'text-green-500' : result.summary.governanceScore >= 60 ? 'text-amber-500' : 'text-red-500'}
                         />
                       </svg>
-                      <Target className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-500" />
+                      <Target className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-indigo-500" />
                     </div>
                   </div>
                   <Progress value={result.summary.governanceScore} className="h-1" />
@@ -704,20 +836,120 @@ export default function MarkdownAnalyzerApp() {
                         {result.summary.determinismScore.toFixed(0)}%
                       </p>
                     </div>
-                    <div className="relative w-12 h-12">
-                      <svg className="w-12 h-12 -rotate-90">
-                        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="4" className="text-muted" />
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
                         <circle 
-                          cx="24" cy="24" r="20" fill="none" 
-                          stroke="currentColor" strokeWidth="4" 
-                          strokeDasharray={`${result.summary.determinismScore * 1.256} 125.6`}
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${result.summary.determinismScore * 1.005} 100.5`}
                           className={result.summary.determinismScore >= 80 ? 'text-green-500' : result.summary.determinismScore >= 60 ? 'text-amber-500' : 'text-red-500'}
                         />
                       </svg>
-                      <RefreshCw className="w-4 h-4 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-500" />
+                      <RefreshCw className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blue-500" />
                     </div>
                   </div>
                   <Progress value={result.summary.determinismScore} className="h-1" />
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-purple-500/5 to-pink-500/5">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Reasoning Trace</p>
+                      <p className={`text-xl font-bold ${getHealthColor(result.summary.reasoningTraceScore || 100)}`}>
+                        {(result.summary.reasoningTraceScore || 100).toFixed(0)}%
+                      </p>
+                    </div>
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
+                        <circle 
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${(result.summary.reasoningTraceScore || 100) * 1.005} 100.5`}
+                          className={(result.summary.reasoningTraceScore || 100) >= 80 ? 'text-green-500' : (result.summary.reasoningTraceScore || 100) >= 60 ? 'text-amber-500' : 'text-red-500'}
+                        />
+                      </svg>
+                      <GitBranch className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-purple-500" />
+                    </div>
+                  </div>
+                  <Progress value={result.summary.reasoningTraceScore || 100} className="h-1" />
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-teal-500/5 to-cyan-500/5">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Evidence Binding</p>
+                      <p className={`text-xl font-bold ${getHealthColor(result.summary.evidenceBindingScore || 100)}`}>
+                        {(result.summary.evidenceBindingScore || 100).toFixed(0)}%
+                      </p>
+                    </div>
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
+                        <circle 
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${(result.summary.evidenceBindingScore || 100) * 1.005} 100.5`}
+                          className={(result.summary.evidenceBindingScore || 100) >= 80 ? 'text-green-500' : (result.summary.evidenceBindingScore || 100) >= 60 ? 'text-amber-500' : 'text-red-500'}
+                        />
+                      </svg>
+                      <Database className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-teal-500" />
+                    </div>
+                  </div>
+                  <Progress value={result.summary.evidenceBindingScore || 100} className="h-1" />
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-rose-500/5 to-pink-500/5">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Policy Compliance</p>
+                      <p className={`text-xl font-bold ${getHealthColor(result.summary.policyComplianceScore || 100)}`}>
+                        {(result.summary.policyComplianceScore || 100).toFixed(0)}%
+                      </p>
+                    </div>
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
+                        <circle 
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${(result.summary.policyComplianceScore || 100) * 1.005} 100.5`}
+                          className={(result.summary.policyComplianceScore || 100) >= 80 ? 'text-green-500' : (result.summary.policyComplianceScore || 100) >= 60 ? 'text-amber-500' : 'text-red-500'}
+                        />
+                      </svg>
+                      <Scale className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-rose-500" />
+                    </div>
+                  </div>
+                  <Progress value={result.summary.policyComplianceScore || 100} className="h-1" />
+                </CardContent>
+              </Card>
+              <Card className="bg-gradient-to-br from-emerald-500/5 to-lime-500/5">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between mb-2">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Cross-Layer</p>
+                      <p className={`text-xl font-bold ${getHealthColor(result.summary.crossLayerValidationScore || 100)}`}>
+                        {(result.summary.crossLayerValidationScore || 100).toFixed(0)}%
+                      </p>
+                    </div>
+                    <div className="relative w-10 h-10">
+                      <svg className="w-10 h-10 -rotate-90">
+                        <circle cx="20" cy="20" r="16" fill="none" stroke="currentColor" strokeWidth="3" className="text-muted" />
+                        <circle 
+                          cx="20" cy="20" r="16" fill="none" 
+                          stroke="currentColor" strokeWidth="3" 
+                          strokeDasharray={`${(result.summary.crossLayerValidationScore || 100) * 1.005} 100.5`}
+                          className={(result.summary.crossLayerValidationScore || 100) >= 80 ? 'text-green-500' : (result.summary.crossLayerValidationScore || 100) >= 60 ? 'text-amber-500' : 'text-red-500'}
+                        />
+                      </svg>
+                      <Layers className="w-3 h-3 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-emerald-500" />
+                    </div>
+                  </div>
+                  <Progress value={result.summary.crossLayerValidationScore || 100} className="h-1" />
                 </CardContent>
               </Card>
             </div>
@@ -726,7 +958,7 @@ export default function MarkdownAnalyzerApp() {
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="h-8">
                 <TabsTrigger value="issues" className="text-xs">Issues</TabsTrigger>
-                <TabsTrigger value="layers" className="text-xs">28 Layers</TabsTrigger>
+                <TabsTrigger value="layers" className="text-xs">42 Layers</TabsTrigger>
                 <TabsTrigger value="entities" className="text-xs">Entities</TabsTrigger>
                 <TabsTrigger value="agents" className="text-xs">Agents</TabsTrigger>
                 <TabsTrigger value="memory" className="text-xs">Memory</TabsTrigger>
@@ -743,7 +975,9 @@ export default function MarkdownAnalyzerApp() {
                   <select className="px-2 py-1 text-xs rounded border bg-background" value={filterSeverity} onChange={(e) => setFilterSeverity(e.target.value)}>
                     <option value="all">All Severity</option>
                     <option value="critical">Critical</option>
-                    <option value="warning">Warning</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
                     <option value="info">Info</option>
                   </select>
                   <select className="px-2 py-1 text-xs rounded border bg-background" value={filterAgent} onChange={(e) => setFilterAgent(e.target.value)}>
@@ -800,29 +1034,29 @@ export default function MarkdownAnalyzerApp() {
                 </Card>
               </TabsContent>
 
-              {/* 28 Layers Tab */}
+              {/* 42 Layers Tab */}
               <TabsContent value="layers" className="mt-2">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                   {/* BASE Layers */}
-                  <Card className="md:col-span-2">
+                  <Card className="md:col-span-2 lg:col-span-1">
                     <CardHeader className="py-2 px-3">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-blue-500" /> BASE Layers (1-10)
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <Activity className="w-3 h-3 text-blue-500" /> BASE Layers (1-10)
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="py-2 px-3">
-                      <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                        {ALL_28_LAYERS.filter(l => l.group === 'base').map(layer => {
+                      <div className="grid grid-cols-2 gap-1">
+                        {ALL_42_LAYERS.filter(l => l.group === 'base').map(layer => {
                           const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
                                        result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
                           return (
-                            <div key={layer.id} className="p-2 rounded bg-gradient-to-br from-blue-500/5 to-green-500/5">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-[10px] text-muted-foreground">L{layer.num}</span>
-                                <span className={`text-xs font-bold ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                            <div key={layer.id} className="p-1.5 rounded bg-gradient-to-br from-blue-500/5 to-green-500/5">
+                              <div className="flex items-center justify-between mb-0.5">
+                                <span className="text-[9px] text-muted-foreground">L{layer.num}</span>
+                                <span className={`text-[10px] font-bold ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
                               </div>
-                              <p className="text-[10px] font-medium truncate">{layer.name}</p>
-                              <Progress value={score} className="h-1 mt-1" />
+                              <p className="text-[9px] font-medium truncate">{layer.name}</p>
+                              <Progress value={score} className="h-0.5 mt-0.5" />
                             </div>
                           );
                         })}
@@ -833,22 +1067,22 @@ export default function MarkdownAnalyzerApp() {
                   {/* SYSTEM CORE Layers */}
                   <Card>
                     <CardHeader className="py-2 px-3">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Lock className="w-4 h-4 text-red-500" /> SYSTEM CORE (11-15)
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <Lock className="w-3 h-3 text-red-500" /> SYSTEM CORE (11-15)
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="py-2 px-3 space-y-1">
-                      {ALL_28_LAYERS.filter(l => l.group === 'system').map(layer => {
+                      {ALL_42_LAYERS.filter(l => l.group === 'system').map(layer => {
                         const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
                                      result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
                         return (
-                          <div key={layer.id} className="flex items-center gap-2 p-1.5 rounded bg-gradient-to-r from-red-500/5 to-orange-500/5">
-                            <span className="text-[10px] text-muted-foreground w-6">L{layer.num}</span>
+                          <div key={layer.id} className="flex items-center gap-2 p-1 rounded bg-gradient-to-r from-red-500/5 to-orange-500/5">
+                            <span className="text-[9px] text-muted-foreground w-5">L{layer.num}</span>
                             <div className="flex-1 min-w-0">
-                              <p className="text-[10px] font-medium truncate">{layer.name}</p>
+                              <p className="text-[9px] font-medium truncate">{layer.name}</p>
                             </div>
-                            <Progress value={score} className="h-1.5 w-16" />
-                            <span className={`text-[10px] font-bold w-6 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                            <Progress value={score} className="h-1 w-12" />
+                            <span className={`text-[9px] font-bold w-5 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
                           </div>
                         );
                       })}
@@ -858,29 +1092,108 @@ export default function MarkdownAnalyzerApp() {
                   {/* FORMAL SYSTEM Layers */}
                   <Card>
                     <CardHeader className="py-2 px-3">
-                      <CardTitle className="text-sm flex items-center gap-2">
-                        <Target className="w-4 h-4 text-purple-500" /> FORMAL SYSTEM (16-28)
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <Target className="w-3 h-3 text-purple-500" /> FORMAL SYSTEM (16-28)
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="py-2 px-3">
-                      <ScrollArea className="h-[200px]">
+                      <ScrollArea className="h-[150px]">
                         <div className="space-y-1">
-                          {ALL_28_LAYERS.filter(l => l.group === 'formal').map(layer => {
+                          {ALL_42_LAYERS.filter(l => l.group === 'formal').map(layer => {
                             const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
                                          result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
                             return (
-                              <div key={layer.id} className="flex items-center gap-2 p-1.5 rounded bg-gradient-to-r from-purple-500/5 to-indigo-500/5">
-                                <span className="text-[10px] text-muted-foreground w-6">L{layer.num}</span>
+                              <div key={layer.id} className="flex items-center gap-2 p-1 rounded bg-gradient-to-r from-purple-500/5 to-indigo-500/5">
+                                <span className="text-[9px] text-muted-foreground w-5">L{layer.num}</span>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-[10px] font-medium truncate">{layer.name}</p>
+                                  <p className="text-[9px] font-medium truncate">{layer.name}</p>
                                 </div>
-                                <Progress value={score} className="h-1.5 w-12" />
-                                <span className={`text-[10px] font-bold w-6 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                                <Progress value={score} className="h-1 w-10" />
+                                <span className={`text-[9px] font-bold w-5 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
                               </div>
                             );
                           })}
                         </div>
                       </ScrollArea>
+                    </CardContent>
+                  </Card>
+
+                  {/* POLICY ENGINE Layers */}
+                  <Card>
+                    <CardHeader className="py-2 px-3">
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <Scale className="w-3 h-3 text-teal-500" /> POLICY ENGINE (29-32)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="py-2 px-3 space-y-1">
+                      {ALL_42_LAYERS.filter(l => l.group === 'policy').map(layer => {
+                        const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
+                                     result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
+                        return (
+                          <div key={layer.id} className="flex items-center gap-2 p-1 rounded bg-gradient-to-r from-teal-500/5 to-cyan-500/5">
+                            <span className="text-[9px] text-muted-foreground w-5">L{layer.num}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[9px] font-medium truncate">{layer.name}</p>
+                            </div>
+                            <Progress value={score} className="h-1 w-12" />
+                            <span className={`text-[9px] font-bold w-5 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                          </div>
+                        );
+                      })}
+                    </CardContent>
+                  </Card>
+
+                  {/* FORMAL VERIFICATION Layers */}
+                  <Card>
+                    <CardHeader className="py-2 px-3">
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <ShieldCheck className="w-3 h-3 text-rose-500" /> FORMAL VERIFICATION (33-38)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="py-2 px-3">
+                      <ScrollArea className="h-[150px]">
+                        <div className="space-y-1">
+                          {ALL_42_LAYERS.filter(l => l.group === 'verification').map(layer => {
+                            const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
+                                         result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
+                            return (
+                              <div key={layer.id} className="flex items-center gap-2 p-1 rounded bg-gradient-to-r from-rose-500/5 to-pink-500/5">
+                                <span className="text-[9px] text-muted-foreground w-5">L{layer.num}</span>
+                                <div className="flex-1 min-w-0">
+                                  <p className="text-[9px] font-medium truncate">{layer.name}</p>
+                                </div>
+                                <Progress value={score} className="h-1 w-10" />
+                                <span className={`text-[9px] font-bold w-5 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </ScrollArea>
+                    </CardContent>
+                  </Card>
+
+                  {/* VALIDATION Layers */}
+                  <Card>
+                    <CardHeader className="py-2 px-3">
+                      <CardTitle className="text-xs flex items-center gap-2">
+                        <CheckSquare className="w-3 h-3 text-emerald-500" /> VALIDATION (39-42)
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="py-2 px-3 space-y-1">
+                      {ALL_42_LAYERS.filter(l => l.group === 'validation').map(layer => {
+                        const score = result.metaCognition.layerScores?.[layer.id as IssueLayer] ?? 
+                                     result.summary.layerScores?.[layer.id as IssueLayer] ?? 100;
+                        return (
+                          <div key={layer.id} className="flex items-center gap-2 p-1 rounded bg-gradient-to-r from-emerald-500/5 to-lime-500/5">
+                            <span className="text-[9px] text-muted-foreground w-5">L{layer.num}</span>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[9px] font-medium truncate">{layer.name}</p>
+                            </div>
+                            <Progress value={score} className="h-1 w-12" />
+                            <span className={`text-[9px] font-bold w-5 text-right ${getHealthColor(score)}`}>{score.toFixed(0)}</span>
+                          </div>
+                        );
+                      })}
                     </CardContent>
                   </Card>
                 </div>
@@ -982,11 +1295,15 @@ export default function MarkdownAnalyzerApp() {
                   </CardHeader>
                   <CardContent className="py-2 px-3">
                     <ScrollArea className="h-[280px]">
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-1">
+                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-1">
                         {result.agentResults.map((agent) => {
                           const Icon = AGENT_ICONS[agent.agentName] || AGENT_ICONS['default'];
                           const tierColor = agent.agentTier === 'core' ? 'bg-blue-500/10 border-blue-500/30' : 
-                                            agent.agentTier === 'advanced' ? 'bg-purple-500/10 border-purple-500/30' : 'bg-amber-500/10 border-amber-500/30';
+                                            agent.agentTier === 'advanced' ? 'bg-purple-500/10 border-purple-500/30' : 
+                                            agent.agentTier === 'policy' ? 'bg-teal-500/10 border-teal-500/30' :
+                                            agent.agentTier === 'formal' ? 'bg-rose-500/10 border-rose-500/30' :
+                                            agent.agentTier === 'validation' ? 'bg-emerald-500/10 border-emerald-500/30' :
+                                            'bg-amber-500/10 border-amber-500/30';
                           return (
                             <div key={agent.agentName} className={`flex items-center gap-2 p-2 rounded border ${tierColor}`}>
                               <Icon className="w-4 h-4" />
@@ -1050,7 +1367,7 @@ export default function MarkdownAnalyzerApp() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Agent Tiers:</span>
-                          <span className="font-medium">{result.agentInfo.coreAgents} Core / {result.agentInfo.advancedAgents} Advanced / {result.agentInfo.metaAgents} Meta</span>
+                          <span className="font-medium">{result.agentInfo.coreAgents}C / {result.agentInfo.advancedAgents}A / {result.agentInfo.policyAgents || 0}P / {result.agentInfo.formalAgents || 0}F / {result.agentInfo.validationAgents || 0}V / {result.agentInfo.metaAgents}M</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-muted-foreground">Overall Confidence:</span>
@@ -1105,10 +1422,10 @@ export default function MarkdownAnalyzerApp() {
                       </CardTitle>
                     </CardHeader>
                     <CardContent className="py-2 px-3">
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+                      <div className="grid grid-cols-2 md:grid-cols-7 gap-2">
                         <div className="p-2 rounded bg-gradient-to-r from-blue-500/10 to-green-500/10">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">Document Health</span>
+                            <span className="text-[10px] text-muted-foreground">Doc Health</span>
                             <span className={`text-sm font-bold ${getHealthColor(result.summary.documentHealthScore)}`}>
                               {result.summary.documentHealthScore.toFixed(0)}
                             </span>
@@ -1117,7 +1434,7 @@ export default function MarkdownAnalyzerApp() {
                         </div>
                         <div className="p-2 rounded bg-gradient-to-r from-red-500/10 to-orange-500/10">
                           <div className="flex items-center justify-between">
-                            <span className="text-[10px] text-muted-foreground">Execution Safety</span>
+                            <span className="text-[10px] text-muted-foreground">Exec Safety</span>
                             <span className={`text-sm font-bold ${getHealthColor(result.summary.executionSafetyScore)}`}>
                               {result.summary.executionSafetyScore.toFixed(0)}
                             </span>
@@ -1141,6 +1458,33 @@ export default function MarkdownAnalyzerApp() {
                             </span>
                           </div>
                           <Progress value={result.summary.determinismScore} className="h-1 mt-1" />
+                        </div>
+                        <div className="p-2 rounded bg-gradient-to-r from-purple-500/10 to-pink-500/10">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">Reasoning</span>
+                            <span className={`text-sm font-bold ${getHealthColor(result.summary.reasoningTraceScore || 100)}`}>
+                              {(result.summary.reasoningTraceScore || 100).toFixed(0)}
+                            </span>
+                          </div>
+                          <Progress value={result.summary.reasoningTraceScore || 100} className="h-1 mt-1" />
+                        </div>
+                        <div className="p-2 rounded bg-gradient-to-r from-teal-500/10 to-cyan-500/10">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">Evidence</span>
+                            <span className={`text-sm font-bold ${getHealthColor(result.summary.evidenceBindingScore || 100)}`}>
+                              {(result.summary.evidenceBindingScore || 100).toFixed(0)}
+                            </span>
+                          </div>
+                          <Progress value={result.summary.evidenceBindingScore || 100} className="h-1 mt-1" />
+                        </div>
+                        <div className="p-2 rounded bg-gradient-to-r from-rose-500/10 to-pink-500/10">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] text-muted-foreground">Policy</span>
+                            <span className={`text-sm font-bold ${getHealthColor(result.summary.policyComplianceScore || 100)}`}>
+                              {(result.summary.policyComplianceScore || 100).toFixed(0)}
+                            </span>
+                          </div>
+                          <Progress value={result.summary.policyComplianceScore || 100} className="h-1 mt-1" />
                         </div>
                       </div>
                     </CardContent>
@@ -1236,7 +1580,7 @@ export default function MarkdownAnalyzerApp() {
       {/* Footer */}
       <footer className="border-t bg-card/50 mt-auto">
         <div className="container mx-auto px-4 py-2 text-center text-[10px] text-muted-foreground">
-          <p>Document Intelligence Engine • 35 Agents (10 Core + 21 Advanced + 4 Meta) • 28 Layers • Memory System</p>
+          <p>Document Intelligence Engine • 55 Agents (10 Core + 20 Advanced + 4 Policy + 7 Formal + 4 Validation + 4 Meta) • 42 Layers • Memory System</p>
         </div>
       </footer>
     </div>
