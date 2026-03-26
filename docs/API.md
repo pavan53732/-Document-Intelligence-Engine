@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Document Intelligence Engine provides a RESTful API for document analysis using **34 agents** across **28 layers**.
+The Document Intelligence Engine provides a RESTful API for document analysis using **55 agents** across **42 layers** with **5 severity levels**.
 
 > **📋 See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for implementation status and known issues.**
 
@@ -42,7 +42,7 @@ Creates a new analysis session.
 
 ##### 2. Analyze
 
-Runs the full analysis pipeline with **34 agents** across **28 layers**.
+Runs the full analysis pipeline with **55 agents** across **42 layers**.
 
 **Request**:
 ```json
@@ -65,7 +65,7 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
     {
       "id": "issue-1234567890-abc123",
       "type": "structural",
-      "severity": "warning",
+      "severity": "medium",
       "title": "Heading hierarchy skip",
       "description": "Heading jumps from H1 to H3...",
       "location": "document.md: Line 15",
@@ -92,13 +92,20 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
     "nodeCount": 25,
     "claimCount": 8,
     "definitionCount": 3,
-    "referenceCount": 5
+    "referenceCount": 5,
+    "entityCount": 12,
+    "stateMutationCount": 5,
+    "executionPathCount": 3,
+    "governanceCheckpointCount": 7,
+    "reasoningTraceCount": 15
   },
   "summary": {
     "totalIssues": 12,
     "critical": 1,
-    "warning": 5,
-    "info": 6,
+    "high": 2,
+    "medium": 3,
+    "low": 4,
+    "info": 2,
     "byType": {
       "hallucination": 1,
       "contradiction": 0,
@@ -129,6 +136,26 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
       "simulation_drift": 0,
       "convergence_failure": 0,
       "semantic_drift": 0,
+      "policy_violation": 0,
+      "rule_conflict": 0,
+      "missing_audit_trail": 0,
+      "unauthorized_override": 0,
+      "invariant_not_enforced": 0,
+      "determinism_break": 0,
+      "spec_violation": 0,
+      "ambiguity_detected": 0,
+      "state_explosion_risk": 0,
+      "verification_failure": 0,
+      "context_mismatch": 0,
+      "memory_corruption": 0,
+      "safety_violation": 0,
+      "performance_degradation": 0,
+      "reasoning_gap": 0,
+      "evidence_missing": 0,
+      "uncertainty_propagation": 0,
+      "self_correction_loop": 0,
+      "multi_step_failure": 0,
+      "cross_layer_violation": 0,
       "adversarial": 0,
       "meta": 0
     },
@@ -160,7 +187,21 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
       "boundary_enforcement": 0,
       "simulation": 0,
       "convergence": 0,
-      "semantic_execution": 0
+      "semantic_execution": 0,
+      "policy_compliance": 0,
+      "rule_conflict_resolution": 0,
+      "audit_trail": 0,
+      "override_control": 0,
+      "invariant_enforcement": 0,
+      "determinism_audit": 0,
+      "spec_compliance": 0,
+      "ambiguity_elimination": 0,
+      "state_explosion_control": 0,
+      "formal_verification": 0,
+      "context_validation": 0,
+      "memory_integrity": 0,
+      "safety_validation": 0,
+      "performance_validation": 0
     },
     "byAgent": {
       "Logic Checker": 1,
@@ -170,13 +211,20 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
     "byTier": {
       "core": 8,
       "advanced": 3,
+      "policy": 0,
+      "formal_verification": 0,
+      "validation": 0,
       "meta": 1
     },
     "confidence": 0.82,
     "documentHealthScore": 78,
     "executionSafetyScore": 95,
     "governanceScore": 90,
-    "determinismScore": 92
+    "determinismScore": 92,
+    "reasoningTraceScore": 85,
+    "evidenceBindingScore": 88,
+    "policyComplianceScore": 92,
+    "crossLayerValidationScore": 90
   },
   "metaCognition": {
     "overallConfidence": 0.82,
@@ -213,13 +261,101 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
       "boundary_enforcement": 100,
       "simulation": 100,
       "convergence": 100,
-      "semantic_execution": 100
+      "semantic_execution": 100,
+      "policy_compliance": 100,
+      "rule_conflict_resolution": 100,
+      "audit_trail": 100,
+      "override_control": 100,
+      "invariant_enforcement": 100,
+      "determinism_audit": 100,
+      "spec_compliance": 100,
+      "ambiguity_elimination": 100,
+      "state_explosion_control": 100,
+      "formal_verification": 100,
+      "context_validation": 100,
+      "memory_integrity": 100,
+      "safety_validation": 100,
+      "performance_validation": 100
     }
   },
+  "reasoningTrace": {
+    "totalTraces": 15,
+    "avgUncertaintyScore": 0.12,
+    "evidenceBindingRate": 0.88,
+    "multiStepValidationRate": 0.95,
+    "traces": [
+      {
+        "id": "trace-001",
+        "claimId": "claim-123",
+        "evidenceBindings": [
+          {
+            "evidenceId": "ev-001",
+            "claimId": "claim-123",
+            "bindingStrength": 0.95,
+            "source": "document.md:42"
+          }
+        ],
+        "uncertaintyScore": 0.08,
+        "validationSteps": [
+          {
+            "stepId": "step-001",
+            "type": "premise",
+            "content": "The system processes requests in batches",
+            "confidence": 0.95,
+            "dependencies": []
+          }
+        ]
+      }
+    ]
+  },
+  "crossLayerValidation": {
+    "totalRules": 5,
+    "passedRules": 4,
+    "failedRules": 1,
+    "warnings": 0,
+    "results": [
+      {
+        "ruleId": 1,
+        "ruleName": "Layer Consistency",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "ruleId": 2,
+        "ruleName": "Severity Alignment",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "ruleId": 3,
+        "ruleName": "Evidence Binding",
+        "status": "pass",
+        "details": {}
+      },
+      {
+        "ruleId": 4,
+        "ruleName": "Uncertainty Propagation",
+        "status": "fail",
+        "details": {
+          "reason": "Broken chain at layer 15",
+          "affectedLayers": ["psg_consistency", "invariant_closure"]
+        }
+      },
+      {
+        "ruleId": 5,
+        "ruleName": "Multi-Step Reasoning",
+        "status": "pass",
+        "details": {}
+      }
+    ]
+  },
   "agentInfo": {
-    "totalAgents": 34,
+    "totalAgents": 55,
     "coreAgents": 10,
     "advancedAgents": 20,
+    "policyAgents": 4,
+    "formalVerificationAgents": 7,
+    "validationAgents": 4,
     "metaAgents": 4,
     "agentNames": [
       "Logic Checker",
@@ -252,6 +388,21 @@ Runs the full analysis pipeline with **34 agents** across **28 layers**.
       "Convergence Stability Analyzer",
       "Semantic-Execution Checker",
       "Invariant Closure Checker",
+      "Policy Engine",
+      "Rule Conflict Resolver",
+      "Audit Trail Generator",
+      "Override Controller",
+      "Invariant Enforcer",
+      "Determinism Auditor",
+      "Spec Compliance",
+      "Ambiguity Eliminator",
+      "State Explosion Controller",
+      "Adversarial Tester",
+      "Formal Verifier",
+      "Context Validator",
+      "Memory Integrity",
+      "Safety Validator",
+      "Performance Validator",
       "Cross-Agent Conflict Resolver",
       "Severity Scoring Engine",
       "Stress-Test Generator",
@@ -311,7 +462,7 @@ Retrieve analysis sessions.
     {
       "id": "issue-123",
       "type": "structural",
-      "severity": "warning",
+      "severity": "medium",
       "title": "Heading hierarchy skip",
       "description": "...",
       "location": "document.md: Line 15",
@@ -348,12 +499,17 @@ Get comprehensive memory system dashboard data.
     "avgExecutionSafety": 92.3,
     "avgGovernance": 88.1,
     "avgDeterminism": 90.2,
+    "avgReasoningTrace": 85.0,
+    "avgPolicyCompliance": 92.5,
+    "avgCrossLayerValidation": 90.0,
     "avgConfidence": 0.85,
     "avgAnalysisTime": 4523,
     "totalWordsProcessed": 234567,
     "criticalRate": 0.05,
-    "warningRate": 0.25,
-    "infoRate": 0.70
+    "highRate": 0.10,
+    "mediumRate": 0.25,
+    "lowRate": 0.30,
+    "infoRate": 0.30
   },
   "recentSessions": [
     {
@@ -417,15 +573,26 @@ Get performance metrics for all agents.
     "estimatedAccuracy": 0.72
   },
   {
-    "agentName": "Structure Analyzer",
-    "agentTier": "core",
-    "totalIssues": 156,
-    "avgConfidence": 0.92,
-    "avgProcessingTime": 450,
+    "agentName": "Policy Engine",
+    "agentTier": "policy",
+    "totalIssues": 45,
+    "avgConfidence": 0.88,
+    "avgProcessingTime": 890,
     "totalAnalyses": 23,
-    "ruleBasedIssues": 156,
-    "aiIssues": 0,
-    "estimatedAccuracy": 0.95
+    "ruleBasedIssues": 30,
+    "aiIssues": 15,
+    "estimatedAccuracy": 0.85
+  },
+  {
+    "agentName": "Formal Verifier",
+    "agentTier": "formal_verification",
+    "totalIssues": 23,
+    "avgConfidence": 0.95,
+    "avgProcessingTime": 1560,
+    "totalAnalyses": 23,
+    "ruleBasedIssues": 20,
+    "aiIssues": 3,
+    "estimatedAccuracy": 0.92
   }
 ]
 ```
@@ -450,12 +617,17 @@ Get overall historical statistics.
   "avgExecutionSafety": 92.3,
   "avgGovernance": 88.1,
   "avgDeterminism": 90.2,
+  "avgReasoningTrace": 85.0,
+  "avgPolicyCompliance": 92.5,
+  "avgCrossLayerValidation": 90.0,
   "avgConfidence": 0.85,
   "avgAnalysisTime": 4523,
   "totalWordsProcessed": 234567,
   "criticalRate": 0.05,
-  "warningRate": 0.25,
-  "infoRate": 0.70
+  "highRate": 0.10,
+  "mediumRate": 0.25,
+  "lowRate": 0.30,
+  "infoRate": 0.30
 }
 ```
 
@@ -492,9 +664,159 @@ GET /api/analyze?action=historicalStats
 
 ---
 
+## Reasoning Trace Endpoints
+
+### POST /api/analyze (Reasoning Trace Actions)
+
+#### getReasoningTrace
+
+Get reasoning trace data for a session.
+
+**Request**:
+```json
+{
+  "action": "getReasoningTrace",
+  "sessionId": "clx1234567890abcdef"
+}
+```
+
+**Response**:
+```json
+{
+  "sessionId": "clx1234567890abcdef",
+  "totalTraces": 15,
+  "avgUncertaintyScore": 0.12,
+  "evidenceBindingRate": 0.88,
+  "multiStepValidationRate": 0.95,
+  "traces": [
+    {
+      "id": "trace-001",
+      "agentName": "Logic Checker",
+      "claimId": "claim-123",
+      "evidenceBindings": [
+        {
+          "evidenceId": "ev-001",
+          "claimId": "claim-123",
+          "bindingStrength": 0.95,
+          "source": "document.md:42"
+        }
+      ],
+      "uncertaintyScore": 0.08,
+      "validationSteps": [
+        {
+          "stepId": "step-001",
+          "type": "premise",
+          "content": "The system processes requests in batches",
+          "confidence": 0.95,
+          "dependencies": []
+        },
+        {
+          "stepId": "step-002",
+          "type": "inference",
+          "content": "Therefore, batch processing is the default mode",
+          "confidence": 0.90,
+          "dependencies": ["step-001"]
+        },
+        {
+          "stepId": "step-003",
+          "type": "conclusion",
+          "content": "The claim is supported by evidence",
+          "confidence": 0.92,
+          "dependencies": ["step-001", "step-002"]
+        }
+      ],
+      "crossLayerReferences": ["layer-5", "layer-10"]
+    }
+  ]
+}
+```
+
+#### getCrossLayerValidation
+
+Get cross-layer validation results for a session.
+
+**Request**:
+```json
+{
+  "action": "getCrossLayerValidation",
+  "sessionId": "clx1234567890abcdef"
+}
+```
+
+**Response**:
+```json
+{
+  "sessionId": "clx1234567890abcdef",
+  "totalRules": 5,
+  "passedRules": 4,
+  "failedRules": 1,
+  "warnings": 0,
+  "crossLayerValidationScore": 90,
+  "results": [
+    {
+      "ruleId": 1,
+      "ruleName": "Layer Consistency",
+      "description": "Issues in related layers should be consistent",
+      "status": "pass",
+      "details": {
+        "checkedLayers": 42,
+        "consistentPairs": 156,
+        "inconsistentPairs": 0
+      }
+    },
+    {
+      "ruleId": 2,
+      "ruleName": "Severity Alignment",
+      "description": "Severity should match across layers for same issue",
+      "status": "pass",
+      "details": {
+        "totalIssues": 12,
+        "alignedIssues": 12,
+        "misalignedIssues": 0
+      }
+    },
+    {
+      "ruleId": 3,
+      "ruleName": "Evidence Binding",
+      "description": "All claims must have bound evidence",
+      "status": "pass",
+      "details": {
+        "totalClaims": 25,
+        "boundClaims": 25,
+        "unboundClaims": 0
+      }
+    },
+    {
+      "ruleId": 4,
+      "ruleName": "Uncertainty Propagation",
+      "description": "Uncertainty must propagate correctly through reasoning chains",
+      "status": "fail",
+      "details": {
+        "reason": "Broken chain at layer 15",
+        "affectedLayers": ["psg_consistency", "invariant_closure"],
+        "brokenChains": 1
+      }
+    },
+    {
+      "ruleId": 5,
+      "ruleName": "Multi-Step Reasoning",
+      "description": "Multi-step reasoning must be complete",
+      "status": "pass",
+      "details": {
+        "totalChains": 15,
+        "completeChains": 15,
+        "incompleteChains": 0
+      }
+    }
+  ]
+}
+```
+
+---
+
 ## Data Types
 
-### IssueType (32 Types)
+### IssueType (56+ Types)
 
 ```typescript
 type IssueType = 
@@ -511,17 +833,29 @@ type IssueType =
   | 'sync_violation' | 'recovery_failure' | 'race_condition'
   | 'enforcement_gap' | 'simulation_drift' | 'convergence_failure'
   | 'semantic_drift'
+  // POLICY ENGINE ISSUES (4) 🆕 NEW
+  | 'policy_violation' | 'rule_conflict' 
+  | 'missing_audit_trail' | 'unauthorized_override'
+  // FORMAL VERIFICATION ISSUES (6) 🆕 NEW
+  | 'invariant_not_enforced' | 'determinism_break' | 'spec_violation' 
+  | 'ambiguity_detected' | 'state_explosion_risk' | 'verification_failure'
+  // VALIDATION ISSUES (4) 🆕 NEW
+  | 'context_mismatch' | 'memory_corruption' 
+  | 'safety_violation' | 'performance_degradation'
+  // REASONING ISSUES (6) 🆕 NEW
+  | 'reasoning_gap' | 'evidence_missing' | 'uncertainty_propagation' 
+  | 'self_correction_loop' | 'multi_step_failure' | 'cross_layer_violation'
   // META ISSUES (2)
   | 'adversarial' | 'meta';
 ```
 
-### Severity
+### Severity (5 Levels)
 
 ```typescript
-type Severity = 'critical' | 'warning' | 'info';
+type Severity = 'critical' | 'high' | 'medium' | 'low' | 'info';
 ```
 
-### IssueLayer (28 Layers)
+### IssueLayer (42 Layers)
 
 ```typescript
 type IssueLayer = 
@@ -537,13 +871,22 @@ type IssueLayer =
   | 'closed_world' | 'replay_fidelity' | 'multi_agent' 
   | 'execution_psg_sync' | 'recovery' | 'concurrency' 
   | 'boundary_enforcement' | 'simulation' | 'convergence' 
-  | 'semantic_execution';
+  | 'semantic_execution'
+  // POLICY ENGINE LAYERS (29-32) 🆕 NEW
+  | 'policy_compliance' | 'rule_conflict_resolution' 
+  | 'audit_trail' | 'override_control'
+  // FORMAL VERIFICATION LAYERS (33-38) 🆕 NEW
+  | 'invariant_enforcement' | 'determinism_audit' | 'spec_compliance' 
+  | 'ambiguity_elimination' | 'state_explosion_control' | 'formal_verification'
+  // VALIDATION LAYERS (39-42) 🆕 NEW
+  | 'context_validation' | 'memory_integrity' 
+  | 'safety_validation' | 'performance_validation';
 ```
 
-### AgentTier
+### AgentTier (6 Tiers)
 
 ```typescript
-type AgentTier = 'core' | 'advanced' | 'meta';
+type AgentTier = 'core' | 'advanced' | 'policy' | 'formal_verification' | 'validation' | 'meta';
 ```
 
 ---
@@ -610,6 +953,32 @@ async function analyzeDocuments(files: File[]) {
 
   return analyzeResponse.json();
 }
+
+// Get reasoning trace
+async function getReasoningTrace(sessionId: string) {
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'getReasoningTrace',
+      sessionId,
+    }),
+  });
+  return response.json();
+}
+
+// Get cross-layer validation
+async function getCrossLayerValidation(sessionId: string) {
+  const response = await fetch('/api/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      action: 'getCrossLayerValidation',
+      sessionId,
+    }),
+  });
+  return response.json();
+}
 ```
 
 ### cURL
@@ -631,6 +1000,22 @@ curl -X POST http://localhost:3000/api/analyze \
     "sessionId": "YOUR_SESSION_ID",
     "files": [{"name": "test.md", "content": "# Test\n\nContent"}]
   }'
+
+# Get reasoning trace
+curl -X POST http://localhost:3000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "getReasoningTrace",
+    "sessionId": "YOUR_SESSION_ID"
+  }'
+
+# Get cross-layer validation
+curl -X POST http://localhost:3000/api/analyze \
+  -H "Content-Type: application/json" \
+  -d '{
+    "action": "getCrossLayerValidation",
+    "sessionId": "YOUR_SESSION_ID"
+  }'
 ```
 
 ---
@@ -642,24 +1027,55 @@ Overall document quality based on:
 - Issue count and severity
 - Document length normalization
 - Cross-validation confidence
+- All 42 layers
 
 ### Execution Safety Score (0-100)
 Safety for autonomous system execution based on:
 - Layers: execution_invariant, authority_boundary, deterministic, governance, state_mutation, authority_leak, concurrency
 - Critical issues: -25 points each
-- Warning issues: -10 points each
+- High issues: -15 points each
+- Medium issues: -10 points each
 
 ### Governance Score (0-100)
 Governance enforcement quality based on:
 - Layers: governance, boundary_enforcement, authority_boundary, authority_leak
 - Critical issues: -20 points each
-- Warning issues: -8 points each
+- High issues: -12 points each
+- Medium issues: -8 points each
 
 ### Determinism Score (0-100)
 Execution determinism quality based on:
 - Layers: deterministic, replay_fidelity, concurrency, multi_agent
 - Critical issues: -22 points each
-- Warning issues: -8 points each
+- High issues: -14 points each
+- Medium issues: -8 points each
+
+### Reasoning Trace Score (0-100) 🆕 NEW
+Reasoning chain quality based on:
+- Evidence binding rate
+- Uncertainty propagation accuracy
+- Multi-step validation completeness
+- Cross-layer consistency
+
+### Evidence Binding Score (0-100) 🆕 NEW
+Evidence binding quality based on:
+- Percentage of claims with bound evidence
+- Average binding strength
+- Evidence source diversity
+
+### Policy Compliance Score (0-100) 🆕 NEW
+Policy compliance quality based on:
+- Layers: policy_compliance, rule_conflict_resolution, audit_trail, override_control
+- Policy violations
+- Rule conflicts
+- Audit trail completeness
+
+### Cross-Layer Validation Score (0-100) 🆕 NEW
+Cross-layer consistency quality based on:
+- 5 validation rules
+- Layer consistency
+- Severity alignment
+- Reasoning chain integrity
 
 ---
 
@@ -674,10 +1090,12 @@ No rate limiting is currently implemented. For production use, consider adding:
 
 ## Performance Notes
 
-- **Parallel Execution**: All 30 Core + Advanced agents run concurrently, then 4 Meta agents
+- **Parallel Execution**: All 51 Core + Advanced + Policy + Formal Verification + Validation agents run concurrently, then 4 Meta agents
 - **Large Files**: Content is chunked for processing (max 5000 chars per AI call)
-- **Typical Response Time**: 5-60 seconds depending on document size
+- **Typical Response Time**: 10-120 seconds depending on document size and complexity
 - **Memory Usage**: Scales with total document size
+- **Reasoning Trace Generation**: Adds ~10% overhead
+- **Cross-Layer Validation**: Adds ~5% overhead
 
 ---
 
@@ -886,4 +1304,4 @@ Delete a configuration.
 
 ---
 
-**The API provides a simple interface to the powerful 34-agent, 28-layer analysis system.**
+**The API provides a simple interface to the powerful 55-agent, 42-layer analysis system with 5-level severity.**

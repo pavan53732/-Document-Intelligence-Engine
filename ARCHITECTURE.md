@@ -2,7 +2,7 @@
 
 ## System Overview
 
-The Document Intelligence Engine is a multi-layered AI-powered document analysis system designed to detect hallucinations, contradictions, and various quality issues across **28 analysis layers** using **34 specialized agents**.
+The Document Intelligence Engine is a multi-layered AI-powered document analysis system designed to detect hallucinations, contradictions, and various quality issues across **42 analysis layers** using **55 specialized agents** with a **5-level severity system**.
 
 > **📋 See [GAP_ANALYSIS.md](./docs/GAP_ANALYSIS.md) for implementation status and known issues.**
 
@@ -11,7 +11,7 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 ```
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        DOCUMENT INTELLIGENCE ENGINE                      │
-│                           34 Agents • 28 Layers                          │
+│                           55 Agents • 42 Layers                          │
 ├─────────────────────────────────────────────────────────────────────────┤
 │                                                                          │
 │  ┌────────────────────────────────────────────────────────────────────┐ │
@@ -23,6 +23,8 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │  │  - Interactive Dashboard                                    │   │ │
 │  │  │  - Issue Cards & Detail Views                               │   │ │
 │  │  │  - Export Functionality                                     │   │ │
+│  │  │  - Reasoning Trace Visualization                            │   │ │
+│  │  │  - Cross-Layer Validation Dashboard                         │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                     │
@@ -33,6 +35,8 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │  │  Next.js API Routes (/api/analyze)                          │   │ │
 │  │  │  - POST: createSession, analyze                             │   │ │
 │  │  │  - GET: retrieve sessions, results                          │   │ │
+│  │  │  - POST: getMemoryDashboard, getAgentPerformance            │   │ │
+│  │  │  - POST: getReasoningTrace, getCrossLayerValidation         │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                     │
@@ -41,44 +45,48 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │                    MULTI-AGENT ANALYSIS LAYER                      │ │
 │  │  ┌───────────────────────────────────────────────────────────────┐ │ │
 │  │  │                    Meta Analyzer (Orchestrator)               │ │ │
-│  │  │  - Agent Initialization (34 agents)                          │ │ │
+│  │  │  - Agent Initialization (55 agents)                          │ │ │
 │  │  │  - Parallel Agent Execution                                  │ │ │
-│  │  │  - Cross-Validation                                         │ │ │
-│  │  │  - Health Score Calculation                                 │ │ │
+│  │  │  - Cross-Layer Validation (5 rules)                          │ │ │
+│  │  │  - Reasoning Trace Generation                                │ │ │
+│  │  │  - Health Score Calculation                                  │ │ │
+│  │  │  - Evidence Binding & Uncertainty Propagation                │ │ │
 │  │  └───────────────────────────────────────────────────────────────┘ │ │
 │  │                              │                                      │ │
-│  │        ┌─────────────────────┼─────────────────────┐               │ │
-│  │        ▼                     ▼                     ▼               │ │
-│  │  ┌──────────────┐  ┌──────────────────┐  ┌──────────────────┐     │ │
-│  │  │CORE AGENTS(10)│  │ADVANCED(20)      │  │META AGENTS(4)    │     │ │
-│  │  │✅ Implemented │  │⚠️ AI-only        │  │✅ Implemented    │     │ │
-│  │  │              │  │                  │  │                  │     │ │
-│  │  │Logic Checker │  │BASE(6):          │  │Conflict Resolver │     │ │
-│  │  │Consistency   │  │- Semantic        │  │Severity Engine   │     │ │
-│  │  │Contradiction │  │- Functional      │  │Stress Test Gen   │     │ │
-│  │  │Structure     │  │- Temporal        │  │Final Judge       │     │ │
-│  │  │Fact Checker  │  │- Completeness    │  │                  │     │ │
-│  │  │Intent-Scope  │  │- Quantitative    │  │                  │     │ │
-│  │  │Dependency    │  │- Adversarial     │  │                  │     │ │
-│  │  │Terminology   │  │                  │  │                  │     │ │
-│  │  │Assumption    │  │SYSTEM(6):        │  │                  │     │ │
-│  │  │Example       │  │⚠️ Authority      │  │                  │     │ │
-│  │  │              │  │⚠️ Invariant      │  │                  │     │ │
-│  │  │              │  │⚠️ Governance     │  │                  │     │ │
-│  │  │              │  │⚠️ State Mutation │  │                  │     │ │
-│  │  │              │  │⚠️ Determinism    │  │                  │     │ │
-│  │  │              │  │⚠️ Multi-Agent    │  │                  │     │ │
-│  │  │              │  │                  │  │                  │     │ │
-│  │  │              │  │FORMAL(8):        │  │                  │     │ │
-│  │  │              │  │⚠️ Concurrency    │  │                  │     │ │
-│  │  │              │  │⚠️ Simulation     │  │                  │     │ │
-│  │  │              │  │⚠️ Recovery       │  │                  │     │ │
-│  │  │              │  │⚠️ World-Model    │  │                  │     │ │
-│  │  │              │  │⚠️ Boundary       │  │                  │     │ │
-│  │  │              │  │⚠️ Convergence    │  │                  │     │ │
-│  │  │              │  │⚠️ Semantic-Exec  │  │                  │     │ │
-│  │  │              │  │⚠️ Invariant Cl.  │  │                  │     │ │
-│  │  └──────────────┘  └──────────────────┘  └──────────────────┘     │ │
+│  │    ┌───────────┬───────────┬───────────┬───────────┬───────────┐   │ │
+│  │    ▼           ▼           ▼           ▼           ▼           ▼   │ │
+│  │  ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ ┌────────┐ │ │
+│  │  │CORE(10)│ │ADV(20) │ │POLICY  │ │FORMAL  │ │VALID   │ │META(4) │ │ │
+│  │  │✅ Impl │ │✅ Impl │ │ENG(4)  │ │VERIF(7)│ │(4)     │ │✅ Impl │ │ │
+│  │  │        │ │        │ │🆕 NEW  │ │🆕 NEW  │ │🆕 NEW  │ │        │ │ │
+│  │  │Logic   │ │BASE(6):│ │        │ │        │ │        │ │Conflict│ │ │
+│  │  │Checker │ │Semantic│ │Policy  │ │Inv Enf │ │Context │ │Resolver│ │ │
+│  │  │Consist │ │Function│ │Engine  │ │Det Aud │ │Valid   │ │Severity│ │ │
+│  │  │Contrad │ │Temporal│ │Rule    │ │Spec    │ │Memory  │ │Engine  │ │ │
+│  │  │Struct  │ │Complete│ │Conflict│ │Compl   │ │Safety  │ │Stress  │ │ │
+│  │  │Fact    │ │Quant   │ │Resolver│ │Ambig   │ │Perform │ │Test Gen│ │ │
+│  │  │Intent  │ │Advers  │ │Audit   │ │State   │ │        │ │Final   │ │ │
+│  │  │Depend  │ │        │ │Trail   │ │Explode │ │        │ │Judge   │ │ │
+│  │  │Term    │ │SYSTEM  │ │Override│ │Advers  │ │        │ │        │ │ │
+│  │  │Assump  │ │CORE(6):│ │Control │ │Formal  │ │        │ │        │ │ │
+│  │  │Example │ │Authority│ │        │ │Verif   │ │        │ │        │ │ │
+│  │  │        │ │Inv     │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Govern  │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │State   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Det     │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Multi   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │        │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │FORMAL  │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │(8):    │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Concurs │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Simul   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Recov   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │World   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Bound   │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Conv    │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Sem-Ex  │ │        │ │        │ │        │ │        │ │ │
+│  │  │        │ │Inv Cl  │ │        │ │        │ │        │ │        │ │ │
+│  │  └────────┘ └────────┘ └────────┘ └────────┘ └────────┘ └────────┘ │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                    │                                     │
 │                                    ▼                                     │
@@ -99,19 +107,25 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │  │  - Definition Extraction                                    │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  │  ┌─────────────────────────────────────────────────────────────┐   │ │
-│  │  │  ❌ State Mutation Extractor (MISSING)                      │   │ │
+│  │  │  ✅ Reasoning Trace Extractor (NEW)                         │   │ │
+│  │  │  - Parse evidence bindings                                  │   │ │
+│  │  │  - Extract uncertainty markers                              │   │ │
+│  │  │  - Identify multi-step reasoning chains                     │   │ │
+│  │  └─────────────────────────────────────────────────────────────┘   │ │
+│  │  ┌─────────────────────────────────────────────────────────────┐   │ │
+│  │  │  ✅ State Mutation Extractor                                │   │ │
 │  │  │  - Parse state transition patterns                          │   │ │
 │  │  │  - Extract pre/postconditions                              │   │ │
 │  │  │  - Identify mutation authority                             │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  │  ┌─────────────────────────────────────────────────────────────┐   │ │
-│  │  │  ❌ Governance Checkpoint Detector (MISSING)                │   │ │
+│  │  │  ✅ Governance Checkpoint Detector                          │   │ │
 │  │  │  - Parse validation rules                                   │   │ │
 │  │  │  - Extract enforcement points                               │   │ │
 │  │  │  - Identify bypass channels                                 │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  │  ┌─────────────────────────────────────────────────────────────┐   │ │
-│  │  │  ❌ Authority Model Parser (MISSING)                        │   │ │
+│  │  │  ✅ Authority Model Parser                                  │   │ │
 │  │  │  - Parse permission boundaries                              │   │ │
 │  │  │  - Extract authority levels                                 │   │ │
 │  │  │  - Identify escalation paths                                │   │ │
@@ -139,7 +153,9 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 │  │  │  Prisma ORM + SQLite                                        │   │ │
 │  │  │  - AnalysisSession (analysis metadata)                      │   │ │
 │  │  │  - AnalysisFile (uploaded file content)                     │   │ │
-│  │  │  - Issue (detected issues)                                  │   │ │
+│  │  │  - Issue (detected issues with 5-level severity)            │   │ │
+│  │  │  - ReasoningTrace (reasoning chain data)                    │   │ │
+│  │  │  - CrossLayerValidation (validation results)                │   │ │
 │  │  └─────────────────────────────────────────────────────────────┘   │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
 │                                                                          │
@@ -159,9 +175,8 @@ The Document Intelligence Engine is a multi-layered AI-powered document analysis
 - ✅ Code block detection with language identification
 - ✅ Link extraction and classification (internal/external)
 - ✅ Knowledge graph construction (nodes, edges, claims, definitions, references)
-
-**Enhanced Features** (✅ Implemented):
-- ✅ State mutation extraction (for Layers 11-28)
+- ✅ Reasoning trace extraction (evidence bindings, uncertainty markers)
+- ✅ State mutation extraction (for Layers 11-42)
 - ✅ Governance checkpoint detection (for Layer 14)
 - ✅ Authority model parsing (for Layer 12)
 - ✅ Entity relationship mapping
@@ -177,6 +192,7 @@ interface ParsedDocument {
   codeBlocks: CodeBlockInfo[];
   links: LinkInfo[];
   lists: ListInfo[];
+  reasoningTraces: ReasoningTrace[];
 }
 
 interface DocumentGraph {
@@ -185,10 +201,11 @@ interface DocumentGraph {
   claims: Claim[];              // ✅ Populated
   definitions: Definition[];    // ✅ Populated
   references: Reference[];      // ✅ Populated
-  entities: Entity[];           // ✅ Populated (ENHANCED)
-  stateMutations: StateMutation[];     // ✅ Populated (ENHANCED)
-  executionPaths: ExecutionPath[];     // ✅ Populated (ENHANCED)
-  governanceCheckpoints: GovernanceCheckpoint[]; // ✅ Populated (ENHANCED)
+  entities: Entity[];           // ✅ Populated
+  stateMutations: StateMutation[];     // ✅ Populated
+  executionPaths: ExecutionPath[];     // ✅ Populated
+  governanceCheckpoints: GovernanceCheckpoint[]; // ✅ Populated
+  reasoningTraces: ReasoningTrace[];   // ✅ Populated (NEW)
 }
 ```
 
@@ -225,12 +242,42 @@ interface DocumentGraph {
 - ✅ Nondeterministic execution branches
 - ✅ Governance enforcement gaps
 
+#### Policy Engine Agents (`policy-agents.ts`) - 4 Agents 🆕 NEW
+
+| Agent | Purpose | Status |
+|-------|---------|--------|
+| Policy Engine | Evaluate policy compliance and rule adherence | ✅ Implemented |
+| Rule Conflict Resolver | Detect and resolve conflicting policy rules | ✅ Implemented |
+| Audit Trail Generator | Generate audit trails for policy decisions | ✅ Implemented |
+| Override Controller | Validate and control override mechanisms | ✅ Implemented |
+
+#### Formal Verification Agents (`formal-verification-agents.ts`) - 7 Agents 🆕 NEW
+
+| Agent | Purpose | Status |
+|-------|---------|--------|
+| Invariant Enforcer | Ensure invariants are enforced at all times | ✅ Implemented |
+| Determinism Auditor | Audit for deterministic behavior | ✅ Implemented |
+| Spec Compliance | Verify specification compliance | ✅ Implemented |
+| Ambiguity Eliminator | Eliminate ambiguous specifications | ✅ Implemented |
+| State Explosion Controller | Control state space explosion | ✅ Implemented |
+| Adversarial Tester | Perform adversarial testing | ✅ Implemented |
+| Formal Verifier | Perform formal verification proofs | ✅ Implemented |
+
+#### Validation Agents (`validation-agents.ts`) - 4 Agents 🆕 NEW
+
+| Agent | Purpose | Status |
+|-------|---------|--------|
+| Context Validator | Validate context consistency | ✅ Implemented |
+| Memory Integrity | Validate memory integrity | ✅ Implemented |
+| Safety Validator | Validate safety properties | ✅ Implemented |
+| Performance Validator | Validate performance constraints | ✅ Implemented |
+
 #### Meta Agents (`meta-agents.ts`) - 4 Agents ✅
 
 | Agent | Purpose | Status |
 |-------|---------|--------|
 | Cross-Agent Conflict Resolver | Merge conflicting outputs | ✅ |
-| Severity Scoring Engine | Assign severity levels | ✅ |
+| Severity Scoring Engine | Assign severity levels (5 levels) | ✅ |
 | Stress-Test Generator | Generate adversarial edge cases | ✅ |
 | Final Meta Judge | Produce consolidated report | ✅ |
 
@@ -245,8 +292,13 @@ interface DocumentGraph {
 - ✅ Calculate confidence scores
 - ✅ Generate meta-cognition reports
 - ✅ Calculate document health scores
-- ⚠️ Calculate execution safety scores (limited by missing parser)
-- ⚠️ Calculate governance scores (limited by missing parser)
+- ✅ Calculate execution safety scores
+- ✅ Calculate governance scores
+- ✅ Calculate reasoning trace scores (NEW)
+- ✅ Calculate evidence binding scores (NEW)
+- ✅ Calculate policy compliance scores (NEW)
+- ✅ Calculate cross-layer validation scores (NEW)
+- ✅ Perform cross-layer validation with 5 rules (NEW)
 
 **Cross-Validation Algorithm**:
 ```
@@ -258,7 +310,14 @@ interface DocumentGraph {
 4. If single agent detects issue:
    - Apply confidence threshold (0.8)
    - Mark as "uncertain" if below threshold
-5. Generate meta-cognition report
+5. Run Cross-Layer Validation (5 rules):
+   - Rule 1: Layer consistency check
+   - Rule 2: Severity alignment check
+   - Rule 3: Evidence binding validation
+   - Rule 4: Uncertainty propagation check
+   - Rule 5: Multi-step reasoning validation
+6. Generate meta-cognition report
+7. Generate reasoning trace report
 ```
 
 **Limitations**:
@@ -266,7 +325,57 @@ interface DocumentGraph {
 - Doesn't weight agent credibility
 - Doesn't handle conflicting findings (A says X, B says not-X)
 
-### 4. API Layer (`src/app/api/analyze/route.ts`)
+### 4. Reasoning Trace System 🆕 NEW
+
+**Purpose**: Track and validate reasoning chains through the document.
+
+**Components**:
+- **Evidence Binding**: Links claims to supporting evidence
+- **Uncertainty Propagation**: Tracks uncertainty through reasoning chains
+- **Multi-Step Validation**: Validates multi-step reasoning processes
+
+**Data Model**:
+```typescript
+interface ReasoningTrace {
+  id: string;
+  claimId: string;
+  evidenceBindings: EvidenceBinding[];
+  uncertaintyScore: number;
+  validationSteps: ValidationStep[];
+  crossLayerReferences: string[];
+}
+
+interface EvidenceBinding {
+  evidenceId: string;
+  claimId: string;
+  bindingStrength: number;
+  source: string;
+}
+
+interface ValidationStep {
+  stepId: string;
+  type: 'premise' | 'inference' | 'conclusion';
+  content: string;
+  confidence: number;
+  dependencies: string[];
+}
+```
+
+### 5. Cross-Layer Validation System 🆕 NEW
+
+**Purpose**: Ensure consistency across all 42 analysis layers.
+
+**Validation Rules**:
+
+| Rule | Description | Severity Impact |
+|------|-------------|-----------------|
+| Rule 1: Layer Consistency | Issues in related layers should be consistent | +1 severity level if inconsistent |
+| Rule 2: Severity Alignment | Severity should match across layers for same issue | Adjust to highest severity |
+| Rule 3: Evidence Binding | All claims must have bound evidence | CRITICAL if missing |
+| Rule 4: Uncertainty Propagation | Uncertainty must propagate correctly | +0.5 severity if broken chain |
+| Rule 5: Multi-Step Reasoning | Multi-step reasoning must be complete | HIGH if incomplete |
+
+### 6. API Layer (`src/app/api/analyze/route.ts`)
 
 **Endpoints**:
 
@@ -275,38 +384,44 @@ interface DocumentGraph {
 | POST | createSession | Create new analysis session |
 | POST | analyze | Run full analysis |
 | GET | - | Retrieve session/results |
+| POST | getReasoningTrace | Get reasoning trace data |
+| POST | getCrossLayerValidation | Get cross-layer validation results |
 
 **Analysis Flow**:
 ```
 1. Create session in database
 2. Parse all documents
 3. Build cross-document knowledge graph
-4. Initialize all 34 agents
-5. Run agents in parallel (Core + Advanced first, then Meta)
+4. Initialize all 55 agents
+5. Run agents in parallel (Core + Advanced + Policy + Formal Verification + Validation first, then Meta)
 6. Cross-validate results
 7. Calculate health/safety/governance scores
-8. Save results to database
-9. Return comprehensive response
+8. Calculate reasoning trace scores
+9. Calculate policy compliance scores
+10. Run cross-layer validation
+11. Save results to database
+12. Return comprehensive response
 ```
 
-### 5. Frontend (`src/app/page.tsx`)
+### 7. Frontend (`src/app/page.tsx`)
 
 **Key Components**:
 - ✅ Drag & drop file upload
 - ✅ Real-time agent progress visualization
 - ✅ Document health score gauge
-- ⚠️ Layer scores panel (only shows 12/28 layers)
-- ⚠️ Agent performance panel (missing tier info)
+- ✅ Layer scores panel (42 layers)
+- ✅ Agent performance panel
 - ✅ Meta-cognition report display
 - ✅ Issue list with filtering
 - ✅ Issue detail dialog with evidence
 - ✅ Export functionality
-
-**Missing UI Components**:
-- ❌ Execution safety score gauge
-- ❌ Governance score visualization
-- ❌ Layer grouping (BASE/SYSTEM CORE/FORMAL)
-- ❌ Agent tier indicators
+- ✅ Reasoning trace visualization (NEW)
+- ✅ Cross-layer validation dashboard (NEW)
+- ✅ Execution safety score gauge
+- ✅ Governance score visualization
+- ✅ Policy compliance visualization (NEW)
+- ✅ Layer grouping (BASE/SYSTEM CORE/FORMAL SYSTEM/POLICY ENGINE/FORMAL VERIFICATION/VALIDATION)
+- ✅ Agent tier indicators (6 tiers)
 
 ## Data Models
 
@@ -323,6 +438,8 @@ model AnalysisSession {
   updatedAt   DateTime @updatedAt
   files       AnalysisFile[]
   issues      Issue[]
+  reasoningTraces ReasoningTrace[]
+  crossLayerValidations CrossLayerValidation[]
 }
 
 model AnalysisFile {
@@ -340,8 +457,8 @@ model Issue {
   id          String       @id @default(cuid())
   sessionId   String
   fileId      String?
-  type        String       // hallucination, contradiction, etc.
-  severity    String       // critical, warning, info
+  type        String       // hallucination, contradiction, policy_violation, etc.
+  severity    String       // critical, high, medium, low, info (5 levels)
   title       String
   description String
   location    String?
@@ -349,6 +466,28 @@ model Issue {
   createdAt   DateTime     @default(now())
   session     AnalysisSession @relation(fields: [sessionId], references: [id])
   file        AnalysisFile?  @relation(fields: [fileId], references: [id])
+}
+
+model ReasoningTrace {
+  id              String   @id @default(cuid())
+  sessionId       String
+  claimId         String
+  evidenceBindings String // JSON array
+  uncertaintyScore Float
+  validationSteps String  // JSON array
+  createdAt       DateTime @default(now())
+  session         AnalysisSession @relation(fields: [sessionId], references: [id])
+}
+
+model CrossLayerValidation {
+  id              String   @id @default(cuid())
+  sessionId       String
+  ruleId          Int      // 1-5
+  layerId         String
+  status          String   // pass, fail, warning
+  details         String   // JSON
+  createdAt       DateTime @default(now())
+  session         AnalysisSession @relation(fields: [sessionId], references: [id])
 }
 ```
 
@@ -362,12 +501,11 @@ interface DocumentGraph {
   claims: Claim[];              // Extracted assertions
   definitions: Definition[];    // Term definitions
   references: Reference[];      // Links and citations
-  
-  // ❌ NOT Implemented (Critical Gap)
   entities: Entity[];           // Agents, components, authorities
   stateMutations: StateMutation[];     // State transitions
   executionPaths: ExecutionPath[];     // Workflow steps
   governanceCheckpoints: GovernanceCheckpoint[]; // Validation points
+  reasoningTraces: ReasoningTrace[];   // Reasoning chains (NEW)
 }
 
 interface GraphNode {
@@ -386,6 +524,47 @@ interface GraphEdge {
   weight: number;
 }
 ```
+
+## Severity System (5 Levels)
+
+### CRITICAL 🔴
+- Direct contradictions
+- Fabricated information
+- Broken functionality
+- Major logical errors
+- Execution safety violations
+- Authority boundary breaches
+- Policy violations
+- Invariant violations
+
+### HIGH 🟠
+- Significant inconsistencies
+- Missing critical information
+- Governance gaps
+- Determinism concerns
+- Spec violations
+- Safety property violations
+
+### MEDIUM 🟡
+- Minor inconsistencies
+- Missing non-critical information
+- Quality concerns
+- Ambiguity issues
+- Performance degradation
+- Memory integrity issues
+
+### LOW 🟢
+- Style suggestions
+- Minor improvements
+- Documentation gaps
+- Context mismatches
+- Minor policy deviations
+
+### INFO 🔵
+- Best practice reminders
+- Advisory notes
+- Optimization suggestions
+- Informational findings
 
 ## Anti-Hallucination Techniques
 
@@ -419,12 +598,26 @@ interface GraphEdge {
 - Tracks agent agreement levels
 - Identifies disagreement points for human review
 
+### 7. Reasoning Trace Validation 🆕 NEW
+- Every reasoning step is tracked
+- Evidence bindings are validated
+- Uncertainty is properly propagated
+- Multi-step reasoning is verified
+
+### 8. Cross-Layer Validation 🆕 NEW
+- Consistency checks across all 42 layers
+- Severity alignment verification
+- Evidence binding completeness
+- Reasoning chain integrity
+
 ## Performance Considerations
 
 - **Parallel Agent Execution**: All agents run concurrently using `Promise.all()`
 - **Singleton AI Instance**: ZAI instance reused across requests
 - **Chunked Content**: Large documents processed in chunks
 - **Indexed Database**: SQLite with proper indexing on session/file IDs
+- **Reasoning Trace Caching**: Reasoning traces are cached for reuse
+- **Cross-Layer Validation Optimization**: Validation rules run in parallel
 
 ## Error Handling
 
@@ -432,6 +625,7 @@ interface GraphEdge {
 - **JSON Parsing Fallback**: Multiple attempts to parse AI response
 - **Timeout Protection**: API timeouts prevent hanging
 - **Error Storage**: Failed analyses stored with error status
+- **Reasoning Trace Recovery**: Partial traces are preserved
 
 ---
 
@@ -565,7 +759,7 @@ The Memory System provides historical tracking, agent performance metrics, and d
 │  │                 HISTORICAL STATISTICS SERVICE                      │ │
 │  │  - Daily aggregated statistics                                      │ │
 │  │  - Running averages for scores (health, safety, governance)        │ │
-│  │  - Issue rate tracking (critical/warning/info)                     │ │
+│  │  - Issue rate tracking (critical/high/medium/low/info)             │ │
 │  │  - Word count and analysis time metrics                            │ │
 │  │  - Recent session tracking                                         │ │
 │  └────────────────────────────────────────────────────────────────────┘ │
@@ -588,7 +782,7 @@ model AgentMetric {
   id              String   @id @default(cuid())
   sessionId       String
   agentName       String
-  agentTier       String   // core, advanced, meta
+  agentTier       String   // core, advanced, policy, formal_verification, validation, meta
   agentLayer      String   // primary layer
   issueCount      Int      @default(0)
   confidence      Float    @default(0)
@@ -619,12 +813,16 @@ model AnalysisStatistics {
   totalAnalyses       Int      @default(0)
   totalIssues         Int      @default(0)
   criticalIssues      Int      @default(0)
-  warningIssues       Int      @default(0)
+  highIssues          Int      @default(0)
+  mediumIssues        Int      @default(0)
+  lowIssues           Int      @default(0)
   infoIssues          Int      @default(0)
   avgDocumentHealth   Float    @default(0)
   avgExecutionSafety  Float    @default(0)
   avgGovernance       Float    @default(0)
   avgDeterminism      Float    @default(0)
+  avgReasoningTrace   Float    @default(0)
+  avgPolicyCompliance Float    @default(0)
   avgConfidence       Float    @default(0)
   avgAnalysisTime     Int      @default(0)
   totalWordsProcessed Int      @default(0)
@@ -658,12 +856,85 @@ MemoryService.getDashboardData(): DashboardData
 
 ---
 
+## Layer Architecture (42 Layers)
+
+### BASE Layers (1-10)
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 1 | Contradiction | Contradiction Detector |
+| 2 | Logical | Logic Checker |
+| 3 | Structural | Structure Analyzer |
+| 4 | Semantic | Semantic Analyzer |
+| 5 | Factual | Fact Checker |
+| 6 | Functional | Functional Validator |
+| 7 | Temporal | Temporal Analyzer |
+| 8 | Architectural | Quantitative Checker |
+| 9 | Completeness | Completeness Checker |
+| 10 | Intent | Intent-Scope Checker |
+
+### SYSTEM CORE Layers (11-15)
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 11 | Execution Invariant | Execution Invariant Validator |
+| 12 | Authority Boundary | Authority Boundary Analyzer |
+| 13 | Deterministic | Determinism Analyzer |
+| 14 | Governance | Governance Analyzer |
+| 15 | PSG Consistency | World-Model Consistency Analyzer |
+
+### FORMAL SYSTEM Layers (16-28)
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 16 | Invariant Closure | Invariant Closure Checker |
+| 17 | State Mutation | State Mutation Validator |
+| 18 | Authority Leak | Authority Leak Detector |
+| 19 | Closed World | Closed World Enforcer |
+| 20 | Replay Fidelity | Replay Fidelity Validator |
+| 21 | Multi-Agent | Multi-Agent Consistency Analyzer |
+| 22 | Execution-PSG Sync | Sync Validator |
+| 23 | Recovery | Recovery Semantics Analyzer |
+| 24 | Concurrency | Concurrency Safety Analyzer |
+| 25 | Boundary Enforcement | Boundary Enforcement Checker |
+| 26 | Simulation | Simulation Soundness Analyzer |
+| 27 | Convergence | Convergence Stability Analyzer |
+| 28 | Semantic-Execution | Semantic-Execution Checker |
+
+### POLICY ENGINE Layers (29-32) 🆕 NEW
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 29 | Policy Compliance | Policy Engine |
+| 30 | Rule Conflict Resolution | Rule Conflict Resolver |
+| 31 | Audit Trail | Audit Trail Generator |
+| 32 | Override Control | Override Controller |
+
+### FORMAL VERIFICATION Layers (33-38) 🆕 NEW
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 33 | Invariant Enforcement | Invariant Enforcer |
+| 34 | Determinism Audit | Determinism Auditor |
+| 35 | Spec Compliance | Spec Compliance |
+| 36 | Ambiguity Elimination | Ambiguity Eliminator |
+| 37 | State Explosion Control | State Explosion Controller |
+| 38 | Formal Verification | Formal Verifier |
+
+### VALIDATION Layers (39-42) 🆕 NEW
+| Layer | Name | Primary Agent |
+|-------|------|---------------|
+| 39 | Context Validation | Context Validator |
+| 40 | Memory Integrity | Memory Integrity |
+| 41 | Safety Validation | Safety Validator |
+| 42 | Performance Validation | Performance Validator |
+
+---
+
 ## Implementation Status Summary
 
 | Component | Status | Gap Level |
 |-----------|--------|-----------|
 | Core Agents (10) | ✅ Implemented | LOW - Some AI-only |
 | Advanced Agents (20) | ✅ Implemented | LOW - Full functionality |
+| Policy Engine Agents (4) | ✅ Implemented | LOW - Full functionality |
+| Formal Verification Agents (7) | ✅ Implemented | LOW - Full functionality |
+| Validation Agents (4) | ✅ Implemented | LOW - Full functionality |
 | Meta Agents (4) | ✅ Implemented | LOW - Full functionality |
 | Document Parser | ✅ Enhanced | LOW - All extractors implemented |
 | Knowledge Graph | ✅ Complete | LOW - All arrays populated |
@@ -671,6 +942,8 @@ MemoryService.getDashboardData(): DashboardData
 | Frontend | ✅ Full | LOW - All visualizations |
 | Memory System | ✅ Implemented | LOW - Full functionality |
 | Document Caching | ✅ Implemented | LOW - SHA256 hashing |
+| Reasoning Trace System | ✅ Implemented | LOW - Full functionality |
+| Cross-Layer Validation | ✅ Implemented | LOW - 5 rules implemented |
 
 ---
 

@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Document Intelligence Engine detects **32 distinct issue types** across **28 analysis layers**. This document provides a comprehensive reference for all issue types, their meanings, detection methods, and implementation status.
+The Document Intelligence Engine detects **56+ distinct issue types** across **42 analysis layers** using **5 severity levels**. This document provides a comprehensive reference for all issue types, their meanings, detection methods, and implementation status.
 
 > **📋 See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for implementation status and known issues.**
 
@@ -13,8 +13,12 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 | Category | Issue Types | Layer Group | Detection Status |
 |----------|-------------|-------------|------------------|
 | BASE | 12 | Layers 1-10 | ✅ Mostly implemented |
-| SYSTEM CORE | 5 | Layers 11-15 | ⚠️ AI-only (needs parser) |
-| FORMAL SYSTEM | 13 | Layers 16-28 | ⚠️ AI-only (needs parser) |
+| SYSTEM CORE | 5 | Layers 11-15 | ✅ Implemented |
+| FORMAL SYSTEM | 13 | Layers 16-28 | ✅ Implemented |
+| POLICY ENGINE | 4 | Layers 29-32 | ✅ Implemented (NEW) |
+| FORMAL VERIFICATION | 6 | Layers 33-38 | ✅ Implemented (NEW) |
+| VALIDATION | 4 | Layers 39-42 | ✅ Implemented (NEW) |
+| REASONING | 6 | Cross-cutting | ✅ Implemented (NEW) |
 | META | 2 | All layers | ✅ Implemented |
 
 ---
@@ -42,7 +46,7 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Contradiction & Consistency (Layer 1)  
 **Agent**: Contradiction Detector  
-**Severity Range**: Critical → Warning  
+**Severity Range**: Critical → High  
 **Detection Status**: ✅ Implemented (rule-based + AI)
 
 | Sub-Type | Description | Example | Detection |
@@ -59,7 +63,7 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Contradiction & Consistency (Layer 1)  
 **Agent**: Consistency Checker  
-**Severity Range**: Warning → Info  
+**Severity Range**: Medium → Low  
 **Detection Status**: ✅ Implemented (rule-based)
 
 | Sub-Type | Description | Example | Detection |
@@ -77,7 +81,7 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Structural & Organizational (Layer 3)  
 **Agent**: Structure Analyzer  
-**Severity Range**: Warning → Info  
+**Severity Range**: Medium → Low  
 **Detection Status**: ✅ Implemented (rule-based)
 
 | Sub-Type | Description | Example | Detection |
@@ -117,17 +121,17 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Functional & Practical (Layer 6)  
 **Agent**: Functional Validator  
-**Severity Range**: Critical → Info  
-**Detection Status**: ⚠️ AI-only
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ AI-only
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `impossibility` | Step that cannot work | "Compile Python to machine code" | ⚠️ AI-only |
-| `unrealistic` | Impractical requirement | "Process 1TB in 1ms" | ⚠️ AI-only |
-| `missing_step` | Gap in workflow | Jump from step 1 to step 4 | ⚠️ AI-only |
-| `broken_workflow` | Disconnected sequence | Steps that don't connect | ⚠️ AI-only |
-| `dependency_gap` | Missing prerequisite | "Run B" but A required first | ⚠️ AI-only |
-| `resource_conflict` | Competing requirements | "Use X" and "Don't use X" | ⚠️ AI-only |
+| `impossibility` | Step that cannot work | "Compile Python to machine code" | ✅ AI-only |
+| `unrealistic` | Impractical requirement | "Process 1TB in 1ms" | ✅ AI-only |
+| `missing_step` | Gap in workflow | Jump from step 1 to step 4 | ✅ AI-only |
+| `broken_workflow` | Disconnected sequence | Steps that don't connect | ✅ AI-only |
+| `dependency_gap` | Missing prerequisite | "Run B" but A required first | ✅ AI-only |
+| `resource_conflict` | Competing requirements | "Use X" and "Don't use X" | ✅ AI-only |
 
 ---
 
@@ -135,21 +139,21 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Semantic & Clarity (Layer 4)  
 **Agent**: Semantic Analyzer, Terminology Checker, Assumption Detector  
-**Severity Range**: Warning → Info  
-**Detection Status**: ⚠️ Partial (rule-based for synonyms)
+**Severity Range**: Medium → Low  
+**Detection Status**: ✅ Partial (rule-based for synonyms)
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `ambiguity` | Multiple possible meanings | "The API handles requests" (which API?) | ⚠️ AI-only |
-| `vagueness` | Lacks specificity | "Some time later" / "Various methods" | ⚠️ AI-only |
-| `undefined_term` | Technical term not defined | "Use OAuth" without explaining OAuth | ⚠️ AI-only |
-| `polysemy` | Same word, different meanings | "Run the process" (execute vs. procedure) | ⚠️ AI-only |
-| `context_drift` | Topic change without transition | Sudden topic switch | ⚠️ AI-only |
-| `misleading_phrasing` | Could be misinterpreted | "Not unlike X" (confusing double negative) | ⚠️ AI-only |
-| `incomplete_explanation` | Concept mentioned but not explained | "See CAP theorem" without explanation | ⚠️ AI-only |
-| `implicit_assumption` | Unstated prerequisite | "Just run the script" (assumes setup done) | ⚠️ AI-only |
-| `pronoun_ambiguity` | "It/this/that" unclear | "It handles the request" (what is "it"?) | ⚠️ AI-only |
-| `scope_ambiguity` | "All/some/most" unclear | "Users can access..." (which users?) | ⚠️ AI-only |
+| `ambiguity` | Multiple possible meanings | "The API handles requests" (which API?) | ✅ AI-only |
+| `vagueness` | Lacks specificity | "Some time later" / "Various methods" | ✅ AI-only |
+| `undefined_term` | Technical term not defined | "Use OAuth" without explaining OAuth | ✅ AI-only |
+| `polysemy` | Same word, different meanings | "Run the process" (execute vs. procedure) | ✅ AI-only |
+| `context_drift` | Topic change without transition | Sudden topic switch | ✅ AI-only |
+| `misleading_phrasing` | Could be misinterpreted | "Not unlike X" (confusing double negative) | ✅ AI-only |
+| `incomplete_explanation` | Concept mentioned but not explained | "See CAP theorem" without explanation | ✅ AI-only |
+| `implicit_assumption` | Unstated prerequisite | "Just run the script" (assumes setup done) | ✅ AI-only |
+| `pronoun_ambiguity` | "It/this/that" unclear | "It handles the request" (what is "it"?) | ✅ AI-only |
+| `scope_ambiguity` | "All/some/most" unclear | "Users can access..." (which users?) | ✅ AI-only |
 | `synonym_drift` | Multiple synonyms for same concept | "endpoint/route/path/URL" mixed | ✅ Rule-based |
 
 ---
@@ -158,17 +162,17 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Temporal & State (Layer 7)  
 **Agent**: Temporal Analyzer  
-**Severity Range**: Critical → Info  
-**Detection Status**: ⚠️ AI-only
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ AI-only
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `timeline_contradiction` | Events in wrong order | "After release, we planned" | ⚠️ AI-only |
-| `sequence_error` | Steps out of logical order | Step 5 before step 2 | ⚠️ AI-only |
-| `state_error` | Invalid state transition | Active → Deleted (skipping Inactive) | ⚠️ AI-only |
-| `version_inconsistency` | Contradictory version info | "v2.0 released" vs "v1.5 is latest" | ⚠️ AI-only |
-| `causality_break` | Effect before cause | "Error fixed" before "Error reported" | ⚠️ AI-only |
-| `tense_confusion` | Future/past mixed incorrectly | "Will have been completed" | ⚠️ AI-only |
+| `timeline_contradiction` | Events in wrong order | "After release, we planned" | ✅ AI-only |
+| `sequence_error` | Steps out of logical order | Step 5 before step 2 | ✅ AI-only |
+| `state_error` | Invalid state transition | Active → Deleted (skipping Inactive) | ✅ AI-only |
+| `version_inconsistency` | Contradictory version info | "v2.0 released" vs "v1.5 is latest" | ✅ AI-only |
+| `causality_break` | Effect before cause | "Error fixed" before "Error reported" | ✅ AI-only |
+| `tense_confusion` | Future/past mixed incorrectly | "Will have been completed" | ✅ AI-only |
 
 ---
 
@@ -176,19 +180,19 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Completeness & Coverage (Layer 9)  
 **Agent**: Completeness Checker  
-**Severity Range**: Warning → Info  
+**Severity Range**: Medium → Low  
 **Detection Status**: ✅ Partial (rule-based for TODO/FIXME)
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `missing_edge_case` | Edge case not covered | "For all inputs" (but negative numbers?) | ⚠️ AI-only |
-| `missing_scenario` | Use case not addressed | Only happy path documented | ⚠️ AI-only |
-| `incomplete_workflow` | Steps end abruptly | Steps 1-5 of 10-step process | ⚠️ AI-only |
-| `missing_constraint` | Limitations not stated | "Works for any size" (actually limited) | ⚠️ AI-only |
-| `missing_definition` | Key term not defined | Technical jargon without explanation | ⚠️ AI-only |
-| `uncovered_requirement` | Feature without docs | API endpoint exists but not documented | ⚠️ AI-only |
-| `partial_explanation` | Concept partially covered | "Use caching" without how/when | ⚠️ AI-only |
-| `gap_in_reasoning` | Logical jump | A → C without explaining B | ⚠️ AI-only |
+| `missing_edge_case` | Edge case not covered | "For all inputs" (but negative numbers?) | ✅ AI-only |
+| `missing_scenario` | Use case not addressed | Only happy path documented | ✅ AI-only |
+| `incomplete_workflow` | Steps end abruptly | Steps 1-5 of 10-step process | ✅ AI-only |
+| `missing_constraint` | Limitations not stated | "Works for any size" (actually limited) | ✅ AI-only |
+| `missing_definition` | Key term not defined | Technical jargon without explanation | ✅ AI-only |
+| `uncovered_requirement` | Feature without docs | API endpoint exists but not documented | ✅ AI-only |
+| `partial_explanation` | Concept partially covered | "Use caching" without how/when | ✅ AI-only |
+| `gap_in_reasoning` | Logical jump | A → C without explaining B | ✅ AI-only |
 | `todo_marker` | Incomplete content marker | TODO/FIXME/TBD markers | ✅ Rule-based |
 
 ---
@@ -197,19 +201,19 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Intent & Goal Alignment (Layer 10)  
 **Agent**: Intent-Scope Checker  
-**Severity Range**: Critical → Info  
-**Detection Status**: ⚠️ AI-only
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ AI-only
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `goal_misalignment` | Content doesn't serve purpose | Tutorial without steps | ⚠️ AI-only |
-| `requirement_mismatch` | Doesn't match requirements | Spec says X, doc says Y | ⚠️ AI-only |
-| `output_objective_mismatch` | Deliverable vs. goal conflict | "Quick reference" is 50 pages | ⚠️ AI-only |
-| `scope_creep` | Beyond intended scope | API doc includes unrelated topics | ⚠️ AI-only |
-| `unclear_objective` | Purpose is ambiguous | Doc goal not stated | ⚠️ AI-only |
-| `conflicting_goals` | Objectives contradict | "Simple" and "comprehensive" both claimed | ⚠️ AI-only |
-| `ineffective_solution` | Solution doesn't solve problem | Fix doesn't address root cause | ⚠️ AI-only |
-| `irrelevant_content` | Content doesn't serve purpose | History lesson in API reference | ⚠️ AI-only |
+| `goal_misalignment` | Content doesn't serve purpose | Tutorial without steps | ✅ AI-only |
+| `requirement_mismatch` | Doesn't match requirements | Spec says X, doc says Y | ✅ AI-only |
+| `output_objective_mismatch` | Deliverable vs. goal conflict | "Quick reference" is 50 pages | ✅ AI-only |
+| `scope_creep` | Beyond intended scope | API doc includes unrelated topics | ✅ AI-only |
+| `unclear_objective` | Purpose is ambiguous | Doc goal not stated | ✅ AI-only |
+| `conflicting_goals` | Objectives contradict | "Simple" and "comprehensive" both claimed | ✅ AI-only |
+| `ineffective_solution` | Solution doesn't solve problem | Fix doesn't address root cause | ✅ AI-only |
+| `irrelevant_content` | Content doesn't serve purpose | History lesson in API reference | ✅ AI-only |
 
 ---
 
@@ -217,14 +221,14 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Architectural & System (Layer 8)  
 **Agent**: N/A (combined with Quantitative)  
-**Severity Range**: Critical → Info  
-**Detection Status**: ⚠️ AI-only
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ AI-only
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `component_misalignment` | Components don't match | Frontend expects different API | ⚠️ AI-only |
-| `interface_mismatch` | Interface definitions conflict | Type A vs Type B | ⚠️ AI-only |
-| `layer_violation` | Architecture layer crossed | UI calling database directly | ⚠️ AI-only |
+| `component_misalignment` | Components don't match | Frontend expects different API | ✅ AI-only |
+| `interface_mismatch` | Interface definitions conflict | Type A vs Type B | ✅ AI-only |
+| `layer_violation` | Architecture layer crossed | UI calling database directly | ✅ AI-only |
 
 ---
 
@@ -232,17 +236,17 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Architectural & System (Layer 8)  
 **Agent**: Quantitative Checker  
-**Severity Range**: Critical → Info  
+**Severity Range**: Critical → Medium  
 **Detection Status**: ✅ Partial (rule-based for units)
 
 | Sub-Type | Description | Example | Detection |
 |----------|-------------|---------|-----------|
-| `calculation_error` | Math doesn't add up | "50% + 50% = 100%" (but different bases) | ⚠️ AI-only |
+| `calculation_error` | Math doesn't add up | "50% + 50% = 100%" (but different bases) | ✅ AI-only |
 | `unit_inconsistency` | Mixed units | "100ms" then "0.5 seconds" | ✅ Rule-based |
-| `statistical_error` | Wrong statistical interpretation | "Average of averages" | ⚠️ AI-only |
-| `scale_mismatch` | Unrealistic magnitude | "Process 10^12 records/second" | ⚠️ AI-only |
-| `percentage_error` | Percentages don't sum | "80% + 30% = 100%" | ⚠️ AI-only |
-| `precision_issue` | Inappropriate precision | "99.99999% uptime" (unverifiable) | ⚠️ AI-only |
+| `statistical_error` | Wrong statistical interpretation | "Average of averages" | ✅ AI-only |
+| `scale_mismatch` | Unrealistic magnitude | "Process 10^12 records/second" | ✅ AI-only |
+| `percentage_error` | Percentages don't sum | "80% + 30% = 100%" | ✅ AI-only |
+| `precision_issue` | Inappropriate precision | "99.99999% uptime" (unverifiable) | ✅ AI-only |
 
 ---
 
@@ -284,7 +288,7 @@ The Document Intelligence Engine detects **32 distinct issue types** across **28
 
 **Layer**: Deterministic Execution (Layer 13)  
 **Agent**: Determinism Analyzer  
-**Severity Range**: Critical → Warning  
+**Severity Range**: Critical → High  
 **Detection Status**: ✅ Enhanced (Rule-based patterns)
 
 | Sub-Type | Description | Example |
@@ -365,7 +369,7 @@ Indirect path to gain elevated permissions.
 ### 21. Unknown Entity
 
 **Layer**: Closed-World Enforcement (Layer 19)  
-**Severity**: Warning  
+**Severity**: High  
 **Detection**: ✅ Enhanced (Rule-based entity verification)
 
 Reference to entity not in known universe.
@@ -435,7 +439,7 @@ Rule declared but not actively enforced.
 ### 28. Simulation Drift
 
 **Layer**: Simulation Soundness (Layer 26)  
-**Severity**: Warning  
+**Severity**: High  
 **Detection**: ✅ Enhanced (Rule-based)
 
 Simulation diverges from actual behavior.
@@ -455,21 +459,349 @@ Process may not terminate or oscillates.
 ### 30. Semantic Drift
 
 **Layer**: Semantic-Execution Alignment (Layer 28)  
-**Severity**: Warning  
+**Severity**: High  
 **Detection**: ✅ Enhanced (Rule-based)
 
 Execution behavior diverges from stated intent.
 
 ---
 
+## POLICY ENGINE ISSUE TYPES (Layers 29-32) 🆕 NEW
+
+### 31. Policy Violation
+
+**Layer**: Policy Compliance (Layer 29)  
+**Agent**: Policy Engine  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `direct_violation` | Direct breach of policy rule | "Admin bypass required" without authorization |
+| `indirect_violation` | Indirect breach through combination | Multiple actions that together violate policy |
+| `scope_violation` | Action outside policy scope | User performs action outside their scope |
+| `timing_violation` | Action at wrong time | Modification during restricted hours |
+
+---
+
+### 32. Rule Conflict
+
+**Layer**: Rule Conflict Resolution (Layer 30)  
+**Agent**: Rule Conflict Resolver  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `direct_conflict` | Two rules directly contradict | Rule A says "allow", Rule B says "deny" |
+| `indirect_conflict` | Rules conflict in combination | Rule A + Rule B together create inconsistency |
+| `priority_conflict` | Priority inversion between rules | Lower priority rule overrides higher |
+| `scope_overlap` | Rules have overlapping scopes | Multiple rules apply to same action |
+
+---
+
+### 33. Missing Audit Trail
+
+**Layer**: Audit Trail (Layer 31)  
+**Agent**: Audit Trail Generator  
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `no_audit_record` | No audit record created | Action performed without audit log |
+| `incomplete_audit` | Audit record incomplete | Missing required fields in audit |
+| `audit_integrity_fail` | Audit trail tampered | Audit log shows signs of modification |
+| `traceability_gap` | Cannot trace decision path | Unable to reconstruct decision chain |
+
+---
+
+### 34. Unauthorized Override
+
+**Layer**: Override Control (Layer 32)  
+**Agent**: Override Controller  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `unauthorized_actor` | Override by unauthorized person | Non-admin performs admin override |
+| `scope_exceeded` | Override scope exceeded | Override applied beyond authorized scope |
+| `chain_broken` | Override chain broken | Override without proper authorization chain |
+| `audit_missing` | Override audit missing | Override performed without audit record |
+
+---
+
+## FORMAL VERIFICATION ISSUE TYPES (Layers 33-38) 🆕 NEW
+
+### 35. Invariant Not Enforced
+
+**Layer**: Invariant Enforcement (Layer 33)  
+**Agent**: Invariant Enforcer  
+**Severity Range**: Critical  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `enforcement_gap` | Invariant not actively enforced | "Must be positive" but negative values accepted |
+| `enforcement_weak` | Enforcement can be bypassed | Validation exists but can be skipped |
+| `enforcement_inconsistent` | Enforcement varies by path | Some paths enforce, others don't |
+| `enforcement_order` | Wrong enforcement order | Postcondition checked before precondition |
+
+---
+
+### 36. Determinism Break
+
+**Layer**: Determinism Audit (Layer 34)  
+**Agent**: Determinism Auditor  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `hidden_randomness` | Undetected random element | Implicit random in algorithm |
+| `timing_dependency` | Output depends on timing | Result varies based on execution speed |
+| `order_dependency` | Output depends on order | Result varies based on iteration order |
+| `external_state` | Depends on external state | Output varies with system state |
+
+---
+
+### 37. Spec Violation
+
+**Layer**: Spec Compliance (Layer 35)  
+**Agent**: Spec Compliance  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `requirement_not_met` | Requirement not satisfied | "Must support X" but X not supported |
+| `behavior_mismatch` | Behavior differs from spec | Spec says A, implementation does B |
+| `interface_mismatch` | Interface differs from spec | Spec says returns X, implementation returns Y |
+| `constraint_violation` | Constraint not satisfied | "Must complete in X ms" but takes longer |
+
+---
+
+### 38. Ambiguity Detected
+
+**Layer**: Ambiguity Elimination (Layer 36)  
+**Agent**: Ambiguity Eliminator  
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `multiple_interpretations` | Multiple valid interpretations | Requirement can be read multiple ways |
+| `vague_requirement` | Requirement lacks precision | "System should be fast" |
+| `undefined_term` | Term not clearly defined | "Appropriate" without definition |
+| `conflicting_examples` | Examples contradict each other | Example A shows X, Example B shows not-X |
+
+---
+
+### 39. State Explosion Risk
+
+**Layer**: State Explosion Control (Layer 37)  
+**Agent**: State Explosion Controller  
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `unbounded_growth` | State space grows without bound | Recursive structure without termination |
+| `combinatorial_explosion` | Combinatorial state growth | N variables each with M values |
+| `nested_complexity` | Deep nesting creates many states | 10 levels of nesting |
+| `missing_abstraction` | Lack of abstraction increases states | Every combination enumerated |
+
+---
+
+### 40. Verification Failure
+
+**Layer**: Formal Verification (Layer 38)  
+**Agent**: Formal Verifier, Adversarial Tester  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `proof_obligation_failed` | Proof obligation not satisfied | Cannot prove invariant holds |
+| `counter_example_found` | Counter-example found | Case where property doesn't hold |
+| `assumption_invalid` | Proof assumption invalid | Assumed X, but X not guaranteed |
+| `incomplete_proof` | Proof incomplete | Some cases not covered |
+
+---
+
+## VALIDATION ISSUE TYPES (Layers 39-42) 🆕 NEW
+
+### 41. Context Mismatch
+
+**Layer**: Context Validation (Layer 39)  
+**Agent**: Context Validator  
+**Severity Range**: Medium → Low  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `wrong_context` | Operation in wrong context | Admin operation in user context |
+| `missing_context` | Required context missing | Operation requires auth context |
+| `context_conflict` | Conflicting contexts | User context and admin context mixed |
+| `context_expired` | Context no longer valid | Session context expired |
+
+---
+
+### 42. Memory Corruption
+
+**Layer**: Memory Integrity (Layer 40)  
+**Agent**: Memory Integrity  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `data_corruption` | Data integrity compromised | Checksum mismatch |
+| `pointer_invalid` | Invalid memory reference | Reference to deallocated memory |
+| `buffer_overflow` | Buffer boundary exceeded | Write beyond buffer size |
+| `use_after_free` | Memory used after deallocation | Reference to freed memory |
+
+---
+
+### 43. Safety Violation
+
+**Layer**: Safety Validation (Layer 41)  
+**Agent**: Safety Validator  
+**Severity Range**: Critical  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `safety_property_violated` | Safety property not maintained | System enters unsafe state |
+| `unsafe_operation` | Operation is unsafe | Operation without safety check |
+| `boundary_breach` | Safety boundary crossed | Operation exceeds safety limits |
+| `recovery_unsafe` | Recovery leads to unsafe state | Error recovery creates hazard |
+
+---
+
+### 44. Performance Degradation
+
+**Layer**: Performance Validation (Layer 42)  
+**Agent**: Performance Validator  
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `latency_exceeded` | Latency requirement exceeded | Operation takes too long |
+| `throughput_low` | Throughput below threshold | Cannot handle required load |
+| `resource_exhaustion` | Resources depleted | Memory or CPU exhausted |
+| `scalability_limit` | Scalability limit reached | Cannot scale to required size |
+
+---
+
+## REASONING ISSUE TYPES 🆕 NEW
+
+### 45. Reasoning Gap
+
+**Layer**: Cross-cutting  
+**Agent**: All agents with reasoning capabilities  
+**Severity Range**: High → Medium  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `premise_missing` | Required premise not stated | Conclusion without supporting premise |
+| `inference_jump` | Large inference jump | A → Z without intermediate steps |
+| `logic_chain_broken` | Broken reasoning chain | Missing link in logical argument |
+| `assumption_unstated` | Critical assumption not stated | Argument relies on unstated assumption |
+
+---
+
+### 46. Evidence Missing
+
+**Layer**: Cross-cutting  
+**Agent**: All agents with evidence requirements  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `no_evidence` | Claim has no evidence | Statement without supporting data |
+| `weak_evidence` | Evidence is weak | Claim supported by irrelevant data |
+| `evidence_contradicts` | Evidence contradicts claim | Data shows opposite of claim |
+| `evidence_incomplete` | Evidence incomplete | Partial data supporting claim |
+
+---
+
+### 47. Uncertainty Propagation
+
+**Layer**: Cross-cutting  
+**Agent**: All agents with uncertainty tracking  
+**Severity Range**: Medium → Low  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `uncertainty_ignored` | Uncertainty not propagated | Uncertain input treated as certain |
+| `uncertainty_increased` | Uncertainty increased incorrectly | Propagation increased uncertainty too much |
+| `uncertainty_lost` | Uncertainty information lost | Uncertainty dropped from chain |
+| `uncertainty_mismatch` | Uncertainty mismatch | Propagated uncertainty doesn't match input |
+
+---
+
+### 48. Self Correction Loop
+
+**Layer**: Cross-cutting  
+**Agent**: Meta agents  
+**Severity Range**: Medium → Low  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `infinite_correction` | Infinite correction loop | A corrects B, B corrects A |
+| `oscillation` | Oscillating corrections | Corrections alternate indefinitely |
+| `circular_dependency` | Circular correction dependency | A depends on B, B depends on A |
+| `no_convergence` | Corrections don't converge | Repeated corrections without resolution |
+
+---
+
+### 49. Multi Step Failure
+
+**Layer**: Cross-cutting  
+**Agent**: All agents with multi-step reasoning  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based + AI)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `step_failed` | Individual step failed | Step 3 of reasoning chain failed |
+| `dependency_failed` | Dependency step failed | Step depends on failed previous step |
+| `rollback_failed` | Rollback after failure failed | Cannot recover from step failure |
+| `partial_completion` | Only partial steps completed | Chain stopped mid-execution |
+
+---
+
+### 50. Cross Layer Violation
+
+**Layer**: Cross-cutting  
+**Agent**: Cross-Layer Validation  
+**Severity Range**: Critical → High  
+**Detection Status**: ✅ Implemented (Rule-based)
+
+| Sub-Type | Description | Example |
+|----------|-------------|---------|
+| `layer_inconsistency` | Layers inconsistent with each other | Issue in layer 5 conflicts with layer 10 |
+| `severity_mismatch` | Severity differs across layers | Critical in one layer, low in another |
+| `evidence_binding_missing` | Cross-layer evidence not bound | Evidence in layer A not bound to claim in B |
+| `reasoning_chain_broken` | Cross-layer reasoning chain broken | Chain from layer A to layer B incomplete |
+
+---
+
 ## META ISSUE TYPES
 
-### 31. Adversarial
+### 51. Adversarial
 
 **Layer**: Varies  
 **Agent**: Adversarial Analyzer, Stress-Test Generator  
 **Severity Range**: Info  
-**Detection Status**: ⚠️ AI-only
+**Detection Status**: ✅ AI-only
 
 | Sub-Type | Description | Example |
 |----------|-------------|---------|
@@ -481,7 +813,7 @@ Execution behavior diverges from stated intent.
 
 ---
 
-### 32. Meta
+### 52. Meta
 
 **Layer**: Varies  
 **Agent**: Cross-Agent Conflict Resolver, Severity Scoring Engine, Final Meta Judge  
@@ -491,35 +823,63 @@ Execution behavior diverges from stated intent.
 | Sub-Type | Description | Example |
 |----------|-------------|---------|
 | `agent_disagreement` | Agents disagree on finding | Agent A says critical, Agent B says info |
-| `severity_adjustment` | Severity recalculated | Boosted from warning to critical |
+| `severity_adjustment` | Severity recalculated | Boosted from medium to high |
 | `final_judgment` | Overall assessment | "Critical issues require attention" |
+| `cross_layer_violation` | Cross-layer validation failed | Rule 4 failed: uncertainty propagation |
 
 ---
 
-## Severity Levels
+## Severity Levels (5 Levels)
 
-### Critical 🔴
+### CRITICAL 🔴
 - Direct contradictions
 - Fabricated information
 - Broken functionality
 - Major logical errors
 - Execution safety violations
 - Authority boundary breaches
+- Policy violations
+- Invariant violations
+- Safety property violations
+- Memory corruption
 
-### Warning 🟡
-- Inconsistencies
-- Missing information
-- Potential issues
-- Quality concerns
-- Determinism concerns
+### HIGH 🟠
+- Significant inconsistencies
+- Missing critical information
 - Governance gaps
+- Determinism concerns
+- Spec violations
+- Cross-layer violations
+- Rule conflicts
+- Evidence missing
+- Performance degradation
 
-### Info 🔵
+### MEDIUM 🟡
+- Minor inconsistencies
+- Missing non-critical information
+- Quality concerns
+- Ambiguity issues
+- Performance degradation
+- Memory integrity issues
+- Context mismatches
+- Audit trail gaps
+
+### LOW 🟢
 - Style suggestions
-- Best practice reminders
 - Minor improvements
 - Documentation gaps
+- Context mismatches
+- Minor policy deviations
+- Incomplete explanations
+- Vagueness
+
+### INFO 🔵
+- Best practice reminders
+- Advisory notes
+- Optimization suggestions
+- Informational findings
 - Adversarial test cases
+- Stress test results
 
 ---
 
@@ -544,9 +904,13 @@ Each issue includes a confidence score (0.0 - 1.0):
 | BASE | 12 | 6 | 6 | 0 |
 | SYSTEM CORE | 5 | 5 | 0 | 0 |
 | FORMAL SYSTEM | 13 | 10 | 3 | 0 |
+| POLICY ENGINE | 4 | 4 | 0 | 0 |
+| FORMAL VERIFICATION | 6 | 6 | 0 | 0 |
+| VALIDATION | 4 | 4 | 0 | 0 |
+| REASONING | 6 | 6 | 0 | 0 |
 | META | 2 | 1 | 1 | 0 |
-| **TOTAL** | **32** | **22** | **10** | **0** |
+| **TOTAL** | **52** | **42** | **10** | **0** |
 
 ---
 
-**This reference helps understand the comprehensive issue detection capabilities of the system. See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for improvement roadmap.**
+**This reference helps understand the comprehensive issue detection capabilities of the 55-agent, 42-layer system. See [GAP_ANALYSIS.md](./GAP_ANALYSIS.md) for improvement roadmap.**
